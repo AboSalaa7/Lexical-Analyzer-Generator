@@ -1,11 +1,14 @@
 
-#ifndef LEXICAL_ANALYZER_GENERATOR_NFA_H
-#define LEXICAL_ANALYZER_GENERATOR_NFA_H
+#include <iostream>
+#include <vector>
+#include <string>
+using namespace std;
 
-
+ 
 class NFA {
-
+    public:
+        void create_NFA();
+ 
+   
 };
-
-
-#endif //LEXICAL_ANALYZER_GENERATOR_NFA_H
+ 
