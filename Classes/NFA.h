@@ -12,7 +12,7 @@ struct State {
     vector<Edge> children;
     bool is_accepted;
 };
-int lastnum = 0;
+extern int lastnum ;
 struct Edge {
     string weight;
     State from;
@@ -36,12 +36,12 @@ class NFA {
         void print_NFA();
         int Findindex_states(NFA a, State find);
 
- 
+
     private:
         State start;
         State end;
 };
- 
 
- 
+
+
 #endif //LEXICAL_ANALYZER_GENERATOR_NFA_H
