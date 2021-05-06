@@ -255,6 +255,7 @@ int main() {
     a.create_NFA("a");
     b.create_NFA("b");
     a= a.Union(a,b);
+    a=a.kleene_closure(a);
    // a.print_NFA();
     c.create_NFA("a");
     d.create_NFA("b");
