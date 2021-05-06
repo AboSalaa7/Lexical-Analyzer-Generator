@@ -112,20 +112,12 @@ void DFA::create_DFA(){
         vector<string> symbols ={"a","b"};
         //vector<string> symbols = parser.get_symbols();
         for (int i=0; i<symbols.size(); i++){
-            int q=0;
-            if (i==1)
-                q=1;
 
             D_State move_to=move( unvisited,symbols[i],this->nfa,id);
-            if (move_to.sub_states.size()==0){
-                this->dead_states.push_back(move_to);
 
-            }
-            else{
             D_Edge edge = {symbols[i], unvisited, move_to};
             D_State U = e_closure(move_to,edge);
 
-            }
 
         }
 
@@ -188,12 +180,13 @@ D_State DFA::e_closure(D_State state,D_Edge edge) {
             }
         }
     }
-    int r=0;
+       if (e_state.sub_states.size()==0)
+            this->dead_states.push_back(edge);
+    else
+        e_state=check_if_exist(e_state,edge);
 
-   e_state=check_if_exist(e_state,edge);
-         return e_state;
 
-
+    return e_state;
 
     }
 
@@ -208,11 +201,9 @@ D_State DFA::check_if_exist(D_State e_state, D_Edge edge){
                     if (e_state.sub_states[j].num == s.sub_states[k].num)
                         match = true;
                 }
-                if (match == false){
-                    match=false;
-                    break;
+                if (match == false)
+                   break;
 
-                }
             }
             if (match) {
                 e_state.num=i;
@@ -235,7 +226,6 @@ D_State DFA::check_if_exist(D_State e_state, D_Edge edge){
         this->states.at(id).children.push_back(edge);
 
         this->states.push_back(e_state);
-
 
 }
 
@@ -284,22 +274,14 @@ int main() {
     B=B.self_loop(b,"b");
     A.print_NFA();
     B.print_NFA();
-
-
-
     //nfa.print_NFA();
-
     A=A.expand(A,B,"a");
     A.print_NFA();
     cout<<endl;
  // cout<<"main nfa_start.children_num : "<<A.get_start().children.size()<<endl;
-
-
-
     A.states[1].children.push_back({"a",A.states[1],A.states[0]});
     A.print_NFA();
     cout<<endl;
-
     State c;
     c.num=2;
     A.states.push_back(c);
@@ -308,31 +290,18 @@ int main() {
     //cout<<"imp"<<A.states[0].children.size()<<endl;
     A.print_NFA();
     cout<<endl;
-
     A.states[2].children.push_back({"b",A.states[2],A.states[0]});
     A.print_NFA();
     cout<<endl;
-
     A.states[2].children.push_back({"b",A.states[2],A.states[1]});
     A.print_NFA();
     cout<<endl;
    // cout<<"main nfa_start.children_num : "<<A.get_start().children.size()<<endl;
-
    // cout<<"create DFA: while nfa_start : "<<A.get_start().children.size()<<endl;
-
     DFA dfa ;
     dfa.nfa=A;
-
-
     dfa.create_DFA();
    // cout<<"create DFA: while nfa_start : "<<A.get_start().children.size()<<endl;
-
     dfa.print_DFA();
-
-
 }
 */
-
-
-
-
