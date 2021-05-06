@@ -1,9 +1,9 @@
 #include "DFA.h"
 #include <stack>
-int Find_index_states(State u,D_State e_state){
+int Find_index_states(state u,D_State e_state){
     for (int i=0;i<e_state.sub_states.size();i++) {
-       if( e_state.sub_states[i].num== u.num)
-           return i;
+        if( e_state.sub_states[i].num== u.num)
+            return i;
 
     }
     return -1;
@@ -11,7 +11,7 @@ int Find_index_states(State u,D_State e_state){
 D_State move( D_State T, string symbol ,NFA nfa,int q){
     D_State res;
     for (int i=0; i<T.sub_states.size(); i++){
-        State t = T.sub_states[i];
+        state t = T.sub_states[i];
         for (int k=0;k<nfa.states.size();k++){
             if (nfa.states[k].num==t.num){
                 t = nfa.states[k];
@@ -20,15 +20,15 @@ D_State move( D_State T, string symbol ,NFA nfa,int q){
             }
         }
         for (int j=0; j<t.children.size(); j++){
-             if (t.children[j].weight == symbol){
-                State u = t.children[j].to;
+            if (t.children[j].weight == symbol){
+                state u = t.children[j].to;
 
-               if(Find_index_states(u,res)== -1){
+                if(Find_index_states(u,res)== -1){
                     res.sub_states.push_back(u);
 
-               }
+                }
 
-             }
+            }
 
         }
 
@@ -39,25 +39,25 @@ D_State move( D_State T, string symbol ,NFA nfa,int q){
 }
 
 
-D_State e_closuree(  State state,NFA nfa) {
+D_State e_closuree(  state state2,NFA nfa) {
 
-    stack<State> s;
+    stack<state> s;
     D_State e_state;
-    s.push(state);
-    e_state.sub_states.push_back(state);
+    s.push(state2);
+    e_state.sub_states.push_back(state2);
     while(!s.empty()){
-        State t = s.top();
+        state t = s.top();
         s.pop();
-         for (int k=0;k<nfa.states.size();k++){
+        for (int k=0;k<nfa.states.size();k++){
             if (nfa.states[k].num==t.num){
                 t = nfa.states[k];
                 break;
             }
         }
         for (int i = 0; i<t.children.size(); i++){
-            State u = t.children[i].to;
+            state u = t.children[i].to;
             if(Find_index_states(u,e_state)== -1&& t.children[i].weight=="e"){
-            e_state.sub_states.push_back(u);
+                e_state.sub_states.push_back(u);
                 s.push(u);
             }
         }
@@ -92,7 +92,7 @@ bool check_same(D_State a, D_State b){
 
 void DFA::create_DFA(){
     NFA nfa = this->nfa;
-    State nfa_start = nfa.get_start();
+    state nfa_start = nfa.get_start();
     D_State start = e_closuree ( nfa.get_start(),nfa);
     start.num = last_num++;
     start.is_visited = false;
@@ -121,7 +121,7 @@ void DFA::create_DFA(){
 
         }
 
- id = check_unvisited();
+        id = check_unvisited();
 
     }
 
@@ -153,17 +153,17 @@ void DFA::print_DFA(){
 
 }
 
-D_State DFA::e_closure(D_State state,D_Edge edge) {
+D_State DFA::e_closure(D_State Dstate,D_Edge edge) {
 
-    stack<State> s;
+    stack<state> s;
     D_State e_state;
 
-    for (int i=0;i< state.sub_states.size(); i++)
-        s.push(state.sub_states[i]);
+    for (int i=0;i< Dstate.sub_states.size(); i++)
+        s.push(Dstate.sub_states[i]);
 
-    e_state.sub_states = state.sub_states;
+    e_state.sub_states = Dstate.sub_states;
     while(!s.empty()){
-        State t = s.top();
+        state t = s.top();
         s.pop();
         for (int k=0;k<this->nfa.states.size();k++){
             if (this->nfa.states[k].num==t.num){
@@ -173,28 +173,28 @@ D_State DFA::e_closure(D_State state,D_Edge edge) {
             }
         }
         for (int i = 0; i<t.children.size(); i++){
-            State u = t.children[i].to;
+            state u = t.children[i].to;
             if( t.children[i].weight=="e" &&  Find_index_states(u,e_state)==-1){
                 e_state.sub_states.push_back(u);
                 s.push(u);
             }
         }
     }
-       if (e_state.sub_states.size()==0)
-            this->dead_states.push_back(edge);
+    if (e_state.sub_states.size()==0)
+        this->dead_states.push_back(edge);
     else
         e_state=check_if_exist(e_state,edge);
 
 
     return e_state;
 
-    }
+}
 
 D_State DFA::check_if_exist(D_State e_state, D_Edge edge){
-     bool match;
+    bool match;
     for (int i=0; i<this->states.size(); i++){
         D_State s = states[i];
-         match=false;
+        match=false;
         if (s.sub_states.size() == e_state.sub_states.size()){
             for (int j=0; j<e_state.sub_states.size();j++){
                 for (int k=0; k<e_state.sub_states.size(); k++){
@@ -202,7 +202,7 @@ D_State DFA::check_if_exist(D_State e_state, D_Edge edge){
                         match = true;
                 }
                 if (match == false)
-                   break;
+                    break;
 
             }
             if (match) {
@@ -227,7 +227,7 @@ D_State DFA::check_if_exist(D_State e_state, D_Edge edge){
 
         this->states.push_back(e_state);
 
-}
+    }
 
     return e_state;
 }
@@ -237,16 +237,16 @@ void DFA::set_start(D_State s){
     this->start=s;
 
 }
-
+/*
 
 int main() {
 
-      NFA a,b,c,d,e;
+    NFA a,b,c,d,e;
     a.create_NFA("a");
     b.create_NFA("b");
     a= a.Union(a,b);
     a=a.kleene_closure(a);
-   // a.print_NFA();
+    // a.print_NFA();
     c.create_NFA("a");
     d.create_NFA("b");
     c.concatenate(c,d);
@@ -263,7 +263,7 @@ int main() {
 
 
 }
-
+*/
 /*
      State a,b ;
     //s.num=0;

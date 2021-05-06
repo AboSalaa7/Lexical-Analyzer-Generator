@@ -1,47 +1,68 @@
-#ifndef LEXICAL_ANALYZER_GENERATOR_NFA_H
-#define LEXICAL_ANALYZER_GENERATOR_NFA_H
-#include <iostream>
-#include <vector>
-#include <string>
-#include <algorithm>
+
+
+#ifndef LEXICAL_AANALYZER_GENERATOR_NFA_H
+#define LEXICAL_AANALYZER_GENERATOR_NFA_H
+#include <bits/stdc++.h>
 using namespace std;
 
-struct Edge;
-struct State {
+struct edge;
+struct state {
     int num;
-    vector<Edge> children;
+    vector<edge> children;
     bool is_accepted;
+    string accepted_token;
+    bool visited;
 };
-extern int lastnum =0;
-struct Edge {
+
+struct edge {
     string weight;
-    State from;
-    State to;
+    state from;
+    state to;
 };
 
 
-class NFA {
-    public:
-        vector<State> states;
-        NFA create_NFA(string token);
-        NFA kleene_closure(NFA a);
-        NFA concatenate(NFA& a, NFA& b);
-        NFA renameStates(NFA a, NFA b);
-        NFA Union(NFA& a, NFA& b);
-        State get_start();
-        void set_start(State a);
-        State get_end();
-        void set_end(State a);
-        void set_NFA(NFA a);
-        void print_NFA();
-        int Findindex_states(NFA a, State find);
 
- 
-    private:
-        State start;
-        State end;
+class NFA
+{
+public:
+    int lastnum = 0;
+
+    NFA();
+
+    void set_start_state(state start);
+    state get_start_state();
+
+    void set_end_state(state end);
+    state get_end_state();
+
+    void set_NFA_size(int s);
+    int get_NFA_size();
+    void clear_visited();
+
+
+    //lina
+
+    vector<state> states;
+    NFA create_NFA(string token);
+    NFA kleene_closure(NFA a);
+    NFA concatenate(NFA& a, NFA& b);
+    NFA renamestates(NFA a, NFA b);
+    NFA Union(NFA& a, NFA& b);
+    state get_start();
+    void set_start(state a);
+    state get_end();
+    void set_end(state a);
+    void set_NFA(NFA a);
+    void print_NFA();
+    int Findindex_states(NFA a, state find);
+
+    virtual ~NFA();
+
+private:
+    state start;
+    state end;
+    int NFA_size =0 ;
 };
- 
 
- 
-#endif //LEXICAL_ANALYZER_GENERATOR_NFA_H
+
+#endif //LEXICAL_AANALYZER_GENERATOR_NFA_H
