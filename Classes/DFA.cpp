@@ -214,10 +214,21 @@ D_State DFA::check_if_exist(D_State e_state, D_Edge edge){
             }
         }
     }
-    if (match == false){
+     if (match == false){
+        e_state.is_accepted=false;
+        vector<int> accept_states;
+        for (int j=0;j<this->nfa.states.size();j++)
+            if (this->nfa.states[j].is_accepted)
+                accept_states.push_back(this->nfa.states[j].num);
         for (int i=0; i<e_state.sub_states.size(); i++){
-            if (e_state.sub_states[i].is_accepted== true)
-                e_state.is_accepted = true;
+            for (int j=0;j<accept_states.size();j++){
+                if (e_state.sub_states[i].num== accept_states[j]){
+                    e_state.is_accepted = true;
+            }
+
+
+            }
+
 
         }
         e_state.is_visited= false;
@@ -238,9 +249,7 @@ void DFA::set_start(D_State s){
 
 }
 /*
-
 int main() {
-
     NFA a,b,c,d,e;
     a.create_NFA("a");
     b.create_NFA("b");
@@ -254,14 +263,10 @@ int main() {
     c.concatenate(c,e);
     a.concatenate(a,c);
     a.print_NFA();
-
     DFA dfa;
     dfa.nfa=a;
     dfa.create_DFA();
     dfa.print_DFA();
-
-
-
 }
 */
 /*
