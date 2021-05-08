@@ -25,7 +25,6 @@ struct edge {
 class NFA
 {
 public:
-    int lastnum = 0;
 
     NFA();
 
@@ -39,9 +38,8 @@ public:
     int get_NFA_size();
     void clear_visited();
 
-
     //lina
-
+    vector<string> weights;
     vector<state> states;
     NFA create_NFA(string token);
     NFA kleene_closure(NFA a);
@@ -55,6 +53,7 @@ public:
     void set_NFA(NFA a);
     void print_NFA();
     int Findindex_states(NFA a, state find);
+    int count_weights();
 
     virtual ~NFA();
 
@@ -63,6 +62,8 @@ private:
     state end;
     int NFA_size =0 ;
 };
+
+
 
 
 #endif //LEXICAL_AANALYZER_GENERATOR_NFA_H

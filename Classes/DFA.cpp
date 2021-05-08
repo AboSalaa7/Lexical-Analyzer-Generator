@@ -1,5 +1,7 @@
 #include "DFA.h"
 #include <stack>
+
+
 int Find_index_states(state u,D_State e_state){
     for (int i=0;i<e_state.sub_states.size();i++) {
         if( e_state.sub_states[i].num== u.num)
@@ -8,6 +10,8 @@ int Find_index_states(state u,D_State e_state){
     }
     return -1;
 }
+
+
 D_State move( D_State T, string symbol ,NFA nfa,int q){
     D_State res;
     for (int i=0; i<T.sub_states.size(); i++){
@@ -16,30 +20,22 @@ D_State move( D_State T, string symbol ,NFA nfa,int q){
             if (nfa.states[k].num==t.num){
                 t = nfa.states[k];
                 break;
-
             }
         }
         for (int j=0; j<t.children.size(); j++){
             if (t.children[j].weight == symbol){
                 state u = t.children[j].to;
-
                 if(Find_index_states(u,res)== -1){
                     res.sub_states.push_back(u);
-
                 }
-
             }
-
         }
-
     }
-
     return res;
-
 }
 
 
-D_State e_closuree(  state state2,NFA nfa) {
+D_State e_closuree(state state2, NFA nfa) {
 
     stack<state> s;
     D_State e_state;
@@ -65,6 +61,8 @@ D_State e_closuree(  state state2,NFA nfa) {
 
     return e_state;
 }
+
+
 bool check_same(D_State a, D_State b){
     bool found=false;
     for (int i=0;i<a.sub_states.size();i++){
@@ -112,20 +110,14 @@ void DFA::create_DFA(){
         vector<string> symbols ={"a","b"};
         //vector<string> symbols = parser.get_symbols();
         for (int i=0; i<symbols.size(); i++){
-
             D_State move_to=move( unvisited,symbols[i],this->nfa,id);
-
             D_Edge edge = {symbols[i], unvisited, move_to};
             D_State U = e_closure(move_to,edge);
-
-
         }
-
         id = check_unvisited();
-
     }
-
 }
+
 
 int DFA::check_unvisited(){
     vector<D_State> D_states = this->states;
@@ -248,27 +240,162 @@ void DFA::set_start(D_State s){
     this->start=s;
 
 }
-/*
+
+
+void DFA::minimization() {
+    int weights = this->nfa.count_weights() - 1;
+    //cout<<"weights : "<<weights<<endl;
+    map <int, int> set;
+    vector<D_State> empty;
+    for(int i=0;i<2;i++) {
+        Partition.push_back(empty);
+    }
+    //fill(Partition.begin(), Partition.end(), empty);
+    for(int i=0;i<states.size();i++){
+        if(states.at(i).is_accepted) {
+            Partition[0].push_back(states.at(i));
+            set.insert(pair<int,int>(states[i].num, 0));
+        }
+        else {
+            Partition[1].push_back(states.at(i));
+            set.insert(pair<int,int>(states[i].num, 1));
+        }
+    }
+   // cout<<"2 part"<<endl;
+   // print_mini();
+
+    int partitionIndex = 2;
+
+    bool loop = true;
+	while(loop) {
+        loop = false;
+        for(int i=0;i<Partition.size();i++){
+            for(int j=0;j<Partition[0].size();j++){
+                vector <D_State> current;
+                current.push_back(Partition[0].at(j));
+               // cout<<endl;
+                //cout<<"Current"<<endl;
+                print_current(current);
+                int first_state = Partition[0].at(j).num;
+                //cout<<endl;
+                //cout<<"first_state : "<<first_state<<endl;
+
+                for(int k = j+1 ; k < Partition[0].size() ; k++) {
+                    int second_state = Partition[0].at(k).num;
+                    //cout<<endl;
+                    //cout<<"2nd_state : "<<second_state<<endl;
+                    int count =0;
+                    for(int l = 0 ; l < Partition[0].at(j).children.size() ; l++) {     //children of 1st state
+                        D_Edge first_state_child =  Partition[0].at(j).children.at(l);
+                        //cout<<"1st_state_child : "<<first_state_child.to.num<<endl;
+                        for(int m = 0 ; m < Partition[0].at(k).children.size() ; m++) {     //children of 2nd state
+                            D_Edge second_state_child =  Partition[0].at(k).children.at(m);
+                           /* cout<<"2nd_state_child : "<<second_state_child.to.num<<endl;
+                            cout<<endl;*/
+                            if( (first_state_child.weight == second_state_child.weight) &&
+                                (set[first_state_child.to.num] == set[second_state_child.to.num])){
+                                count++;
+                                //cout<<"yes compatible!!"<<endl;
+                            }
+                        }
+                    }
+                    //cout<<"count : "<<count<<endl;
+                    if (count == weights) {
+                        current.push_back(Partition[0].at(k));
+                        Partition[0].erase(Partition[0].begin() + k);
+                        k--;
+                       /* cout<<endl;
+                        cout<<"Current"<<endl;
+                        print_current(current);
+                        cout<<endl;
+                        cout<<"Partition Current"<<endl;
+                        print_mini();*/
+                    }
+                    else {
+                        loop = true;
+                    }
+                }
+                for (int k =0 ; k<current.size();k++)
+                {
+                    set[current[k].num] = partitionIndex;
+                }
+                Partition.push_back(current);
+                Partition[0].erase(Partition[0].begin() + j);
+                partitionIndex++;
+                j--;
+              //  cout<<partitionIndex<<" part"<<endl;
+              //  print_mini();
+            }
+            Partition.erase(Partition.begin());
+
+        }
+    }
+}
+
+void DFA::print_current(vector<D_State> current){
+
+    for (int i=0;i<current.size();i++) {
+        cout << current[i].num << " : ";
+        vector<D_Edge> edges = current[i].children;
+        for (int j=0;j<current[i].children.size();j++) {
+            cout <<current[i].children[j].to.num<<","<<current[i].children[j].weight<< " ";
+        }
+        cout << endl;
+    }
+
+}
+
+void DFA::print_mini(){
+    for (int g=0;g<Partition.size();g++){
+    for (int i=0;i<Partition[g].size();i++) {
+        cout << g<<endl;
+        cout << Partition[g][i].num << " : ";
+        vector<D_Edge> edges = Partition[g][i].children;
+        for (int j=0;j<Partition[g][i].children.size();j++) {
+            cout <<Partition[g][i].children[j].to.num<<","<<Partition[g][i].children[j].weight<< " ";
+        }
+        cout << endl;
+    }
+    }
+}
+
 int main() {
-    NFA a,b,c,d,e;
-    a.create_NFA("a");
-    b.create_NFA("b");
-    a= a.Union(a,b);
-    a=a.kleene_closure(a);
-    // a.print_NFA();
-    c.create_NFA("a");
-    d.create_NFA("b");
-    c.concatenate(c,d);
-    e.create_NFA("b");
-    c.concatenate(c,e);
-    a.concatenate(a,c);
-    a.print_NFA();
+
+    NFA test,res,k;
+    string a = "a";
+    string b = "b";
+    string c = "c";
+
+    NFA x = test.create_NFA(a);
+    NFA y = res.create_NFA(b);
+    NFA z = k.create_NFA(c);
+
+    test.concatenate(test,test);
+    test.concatenate(test,x);
+
+    res.kleene_closure(res);
+    res.concatenate(res,y);
+    res.concatenate(res,y);
+    res.concatenate(res,x);
+
+    k.concatenate(k,z);
+    z.kleene_closure(z);
+    k.concatenate(k,z);
+
+    test.Union(test,res);
+    test.Union(test,k);
+
+    test.print_NFA();
     DFA dfa;
-    dfa.nfa=a;
+    dfa.nfa=test;
     dfa.create_DFA();
     dfa.print_DFA();
+    dfa.minimization();
+    dfa.print_mini();
+    return 0;
 }
-*/
+
+
 /*
      State a,b ;
     //s.num=0;

@@ -88,6 +88,8 @@ void NFA::clear_visited()
 }
 
 //lina
+extern int lastnum = 0;
+
 
 NFA NFA::create_NFA(string token) {
     state start,end;
@@ -100,6 +102,7 @@ NFA NFA::create_NFA(string token) {
 
     edge edge = { token, start, end };
 
+
     start.children.push_back(edge);
     this->set_start(start);
     this->set_end(end);
@@ -108,6 +111,8 @@ NFA NFA::create_NFA(string token) {
     this->states.push_back(end);
 
     cout << "done create\n";
+    this->print_NFA();
+
 
     return *this;
 }
@@ -145,6 +150,7 @@ NFA NFA::kleene_closure(NFA a) {
     int ie = Findindex_states(a, end);
     this->states.at(is) = start;
     this->states.at(ie) = end;
+    this->print_NFA();
 
     return *this;
 }
@@ -175,6 +181,7 @@ NFA NFA::concatenate(NFA& a, NFA& b) {
     }
     this->set_start(a.get_start());
     this->set_end(newb.get_end());
+    this->print_NFA();
 
     return *this;
 }
@@ -183,22 +190,16 @@ NFA NFA::renamestates(NFA a, NFA b) {
     int state1was,state1is, state2;
     NFA res = b;
     int count = lastnum;
-  //  cout << "lsatnum: "<< count <<endl;
     for (int i = 0; i < res.states.size(); i++) {
         state1was = res.states[i].num;
-      //  cout << "was: "<< res.states[i].num << endl;
         res.states[i].num = count++;
         state1is =  res.states[i].num;
-
-       // cout << "is: "<< res.states[i].num << endl;
         for (int j = 0; j < res.states.size(); j++) {        //states
             for (int k = 0; k < res.states[j].children.size(); k++) {     //from j to k
                 res.states[j].children.at(k).from.num = res.states[j].num;
                 state2 = res.states[j].children.at(k).to.num;
                 if(state2 == state1was) {
-                 //   cout << "found : "<< res.states[j].children.at(k).to.num << endl;
                     res.states[j].children.at(k).to.num = state1is;
-                  //  cout << "found is : "<< res.states[j].children.at(k).to.num << endl;
                     if(res.states[j].num == res.get_start().num)
                         res.set_start( res.states[j]);
                     if(res.states[j].num == res.get_end().num)
@@ -212,9 +213,11 @@ NFA NFA::renamestates(NFA a, NFA b) {
         }
     }
     lastnum = count;
-    res.print_NFA();
     return res;
 }
+
+
+
 
 NFA NFA::Union(NFA& a, NFA& b) {
 
@@ -264,6 +267,7 @@ NFA NFA::Union(NFA& a, NFA& b) {
 
     this->set_start(start_new);
     this->set_end(end_new);
+    this->print_NFA();
     return *this;
 }
 
@@ -302,7 +306,7 @@ void NFA::print_NFA() {
         for (vector<edge>::iterator jit = edges.begin(); jit != edges.end(); ++jit) {
             state t = jit->to;
             cout << t.num << " ";
-            cout << "( weight =" <<jit->weight << ") ,";
+            cout << "(weight = " <<jit->weight << "), ";
         }
         cout << endl;
     }
@@ -311,7 +315,6 @@ void NFA::print_NFA() {
 int NFA::Findindex_states(NFA a, state find) {
     int count = 0;
     for (vector<state>::iterator it = a.states.begin(); it != a.states.end(); ++it) {
-      //  cout<< "find "<<it->num <<endl;
         if(it->num == find.num) {
             return count;
         }
@@ -320,7 +323,21 @@ int NFA::Findindex_states(NFA a, state find) {
     return count;
 }
 
+int NFA::count_weights(){
+    for (vector<state>::iterator it = states.begin(); it != states.end(); ++it) {
+        vector<edge> edges = it->children;
+        for (vector<edge>::iterator jit = edges.begin(); jit != edges.end(); ++jit) {
+            if (std::find(weights.begin(), weights.end(), jit->weight) == weights.end()) {
+                this->weights.push_back(jit->weight);
+                cout<<jit->weight<<endl;
+            }
 
+        }
+        cout << endl;
+    }
+
+    return this->weights.size();
+}
 
 
 /* Destructor */
@@ -328,3 +345,34 @@ NFA::~NFA()
 {
     //don't forget Destructor in c++ => no garbage collector
 }
+/*
+int main() {
+
+    NFA test,res,k;
+    string a = "a";
+    string b = "b";
+    string c = "c";
+
+    NFA x = test.create_NFA(a);
+    NFA y = res.create_NFA(b);
+    NFA z = k.create_NFA(c);
+
+    test.concatenate(test,test);
+    test.concatenate(test,x);
+
+    res.kleene_closure(res);
+    res.concatenate(res,y);
+    res.concatenate(res,y);
+    res.concatenate(res,x);
+
+    k.concatenate(k,z);
+    z.kleene_closure(z);
+    k.concatenate(k,z);
+
+    test.Union(test,res);
+    test.Union(test,k);
+
+    test.print_NFA();
+    return 0;
+}
+*/
