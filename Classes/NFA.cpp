@@ -1,4 +1,3 @@
-
 #include <bits/stdc++.h>
 #include "NFA.h"
 
@@ -347,31 +346,24 @@ NFA::~NFA()
 }
 /*
 int main() {
-
     NFA test,res,k;
     string a = "a";
     string b = "b";
     string c = "c";
-
     NFA x = test.create_NFA(a);
     NFA y = res.create_NFA(b);
     NFA z = k.create_NFA(c);
-
     test.concatenate(test,test);
     test.concatenate(test,x);
-
     res.kleene_closure(res);
     res.concatenate(res,y);
     res.concatenate(res,y);
     res.concatenate(res,x);
-
     k.concatenate(k,z);
     z.kleene_closure(z);
     k.concatenate(k,z);
-
     test.Union(test,res);
     test.Union(test,k);
-
     test.print_NFA();
     return 0;
 }

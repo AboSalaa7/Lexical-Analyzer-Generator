@@ -1,5 +1,4 @@
 
-
 #ifndef LEXICAL_AANALYZER_GENERATOR_NFA_H
 #define LEXICAL_AANALYZER_GENERATOR_NFA_H
 #include <bits/stdc++.h>
