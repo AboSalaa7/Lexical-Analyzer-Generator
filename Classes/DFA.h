@@ -29,7 +29,6 @@ public:
     vector<D_State> states;
     vector<vector<D_State>> Partition;
 
-
     void create_DFA();
     D_State check_if_exist(D_State e_state,D_Edge edge);
     D_State e_closure(  D_State state,D_Edge edge);
@@ -41,7 +40,6 @@ public:
 private:
     D_State start;
     D_State end;
-
 };
 
 
