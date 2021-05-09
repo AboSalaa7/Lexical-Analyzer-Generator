@@ -109,8 +109,8 @@ NFA NFA::create_NFA(string token) {
     this->states.push_back(start);
     this->states.push_back(end);
 
-    cout << "done create\n";
-    this->print_NFA();
+   // cout << "done create\n";
+    //this->print_NFA();
 
 
     return *this;
@@ -130,10 +130,10 @@ NFA NFA::kleene_closure(NFA a) {
     start_new.num = lastnum++;
     end_new.num = lastnum++;
 
-    edge edge1 = { "e", start_new, start};
-    edge edge2 = { "e", end, end_new };
-    edge edge3 = { "e", end, start };
-    edge edge4 = { "e", start_new, end_new};
+    edge edge1 = { "", start_new, start};
+    edge edge2 = { "", end, end_new };
+    edge edge3 = { "", end, start };
+    edge edge4 = { "", start_new, end_new};
 
     start_new.children.push_back(edge1);
     start_new.children.push_back(edge4);
@@ -149,19 +149,27 @@ NFA NFA::kleene_closure(NFA a) {
     int ie = Findindex_states(a, end);
     this->states.at(is) = start;
     this->states.at(ie) = end;
-    this->print_NFA();
+  //  this->print_NFA();
 
     return *this;
 }
+
+NFA NFA::positiveClosure(string token){
+    NFA result = result.create_NFA(token);
+    edge edge = { token, result.get_end(), result.get_end() };
+    result.get_end().children.push_back(edge);
+    return result;
+}
+
 
 NFA NFA::concatenate(NFA& a, NFA& b) {
 
     NFA newb = renamestates(a,b);
 
     state enda = a.get_end();
-   // cout << "enda: "<< enda.num <<endl;
+    // cout << "enda: "<< enda.num <<endl;
     state startb = newb.get_start();
- //   cout << "startb: "<< startb.num <<endl;
+    //   cout << "startb: "<< startb.num <<endl;
     int endanum = enda.num;
     enda.children = startb.children;
     enda.is_accepted =false;
@@ -180,7 +188,7 @@ NFA NFA::concatenate(NFA& a, NFA& b) {
     }
     this->set_start(a.get_start());
     this->set_end(newb.get_end());
-    this->print_NFA();
+  //  this->print_NFA();
 
     return *this;
 }
@@ -234,15 +242,15 @@ NFA NFA::Union(NFA& a, NFA& b) {
     start_new.num = lastnum++;
     end_new.num = lastnum++;
 
-   /* cout << "enda: "<< enda.num <<endl;
-    cout << "endb: "<< endb.num <<endl;
-    cout << "startb: "<< startb.num <<endl;
-    cout << "starta: "<< starta.num <<endl;
-*/
-    edge edge1 = { "e", start_new, starta};
-    edge edge2 = { "e", start_new, startb};
-    edge edge3 = { "e", enda, end_new };
-    edge edge4 = { "e", endb, end_new };
+    /* cout << "enda: "<< enda.num <<endl;
+     cout << "endb: "<< endb.num <<endl;
+     cout << "startb: "<< startb.num <<endl;
+     cout << "starta: "<< starta.num <<endl;
+ */
+    edge edge1 = { "", start_new, starta};
+    edge edge2 = { "", start_new, startb};
+    edge edge3 = { "", enda, end_new };
+    edge edge4 = { "", endb, end_new };
 
     start_new.children.push_back(edge1);
     start_new.children.push_back(edge2);
@@ -266,7 +274,7 @@ NFA NFA::Union(NFA& a, NFA& b) {
 
     this->set_start(start_new);
     this->set_end(end_new);
-    this->print_NFA();
+   // this->print_NFA();
     return *this;
 }
 

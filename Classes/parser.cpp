@@ -10,7 +10,7 @@ parser::parser(string RegexFile)
 
 NFA* parser::getFullNFA()
 {
-    //NFA *g = new NFA();
+
     NFA g2;
     readRegexFile(this->RegexFile);
     for(int i = 0; i < Regex.size(); i++)
@@ -20,9 +20,9 @@ NFA* parser::getFullNFA()
     }
     for(int i=0; i< expNames.size(); i++)
     {
-        NFA* g2 = expressions[expNames[i]];
+        NFA g2 = expressions[expNames[i]];
         state start;
-        state st2 = g2->get_start_state();
+        state st2 = g2.get_start_state();
         edge e1;
         e1.from = start;
         e1.to= st2;
@@ -52,6 +52,15 @@ void parser::readRegexFile(string path)
 
 void parser::getNFA(string line)
 {
+    NFA result, resultBuilder;
+    result = resultBuilder.create_NFA("");
+    state temp;
+    temp.num = result.get_end().num;
+    temp.visited = result.get_end().visited;
+    temp.children = result.get_end().children;
+    temp.accepted_token = result.get_end().accepted_token;
+    temp.is_accepted = false;
+    result.set_end(temp);
     regex splitter1("\\{\\s*([^.]+)\\s*\\}");
     regex splitter2("\\[\\s*([^.]+)\\s*\\]");
     regex splitter3 ("\\s*(\\S+)\\s*(=|:)\\s*(.+)");
@@ -68,8 +77,8 @@ void parser::getNFA(string line)
             string tok = match1[0];
             //cout << "token is " << token << endl;
 
-            NFA g2 ,test;
-            NFA* g = new NFA();
+
+            //NFA* g = new NFA();
 
             string token = "";
             for(int i = 0; i < tok.length(); i++)
@@ -80,19 +89,20 @@ void parser::getNFA(string line)
                 }
             }
             for(int i = 0; i < token.length(); i++)
-            {
+            {   NFA g2 ,test,test2;
                 string c = "";
                 c.push_back(token[i]);
                 g2 = test.create_NFA(c);
-                //g2.print_NFA();
+                result = test2.Union(result,g2);
             }
 
             //printNFA(g);
-            expressions[token] = g;
+            expressions[token] = result;
             expNames.push_back(token);
             //       setWeights(g);
             str = match1.suffix().str();
         }
+        //return result;
     }
     else if(regex_match(line,splitter2))
     {
@@ -103,8 +113,7 @@ void parser::getNFA(string line)
         {
             string tok = match1[0];
 
-            NFA* g = new NFA();
-            NFA g2,test;
+
             string token = "";
             for(int i = 0; i < tok.length(); i++)
             {
@@ -116,20 +125,23 @@ void parser::getNFA(string line)
             for(int i = 0; i < token.length(); i++)
             {
 
+                NFA g2 ,test,test2;
                 string c = "";
                 c.push_back(token[i]);
                 g2 = test.create_NFA(c);
+                result = test2.Union(result,g2);
                 //g2.print_NFA();
                 //cout << c << endl;
 
             }
 
             //printNFA(g);
-            expressions[token] = g;
+            expressions[token] = result;
             expNames.push_back(token);
             //       setWeights(g);
             str = match1.suffix().str();
         }
+     //   return result;
     }
     else if (regex_match(line,splitter3))
     {
@@ -139,7 +151,7 @@ void parser::getNFA(string line)
         vector<string> tokens = getTokens(str2);
         stack<string> postfix = getPostfix(tokens);
         //cout << postfix.size()<<endl;
-
+        NFA resultIn;
         //cout << acceptance << " is drawing" << endl
         stack<NFA> graphs;
         string token;
@@ -149,37 +161,49 @@ void parser::getNFA(string line)
             token = postfix.top();
             //cout << "token : " << token << endl;
             postfix.pop();
+            bool point=false;
             if( isOperation(token) )
             {
                 //cout << "is operation" << endl;
-                NFA* g = new NFA();
-                NFA G1 = graphs.top();
-                graphs.pop();
-                NFA G2 = graphs.top();
+
+
+                NFA G1,G2;
                 NFA builder;
                 switch(token[0])
                 {
                     case '+':
-
-                        builder.Union(G1,G2);
+                        G1 = graphs.top();
+                        graphs.pop();
+                        resultIn = G1.positiveClosure(acceptance);
                         //printNFA(g);
                         break;
                     case '*':
-
-                        builder.kleene_closure(G1);
+                        G1 = graphs.top();
+                        graphs.pop();
+                        resultIn = G1.kleene_closure(G1);
                         //printNFA(g);
                         break;
                     case '|':
+                        G1 = graphs.top();
+                        graphs.pop();
+                        G2 = graphs.top();
+                        graphs.pop();
                         //cout<<"entered or"<<endl;
-                        builder.Union(G1,G2);
+                        resultIn = resultIn.Union(G1,G2);
                         //printNFA(g);
                         break;
+                    case '#':
+                        G1 = graphs.top();
+                        graphs.pop();
+                        G2 = graphs.top();
+                        graphs.pop();
+                        resultIn = resultIn.concatenate(G1,G2);
+                        break;
                 }
-               // st.push(g);
+                graphs.push(resultIn);
             }
             else
             {
-                NFA *g = new NFA();
                 regex split1("(\\S+)-(\\S+)");
                 std::smatch match1;
                 if(regex_match(token,split1))
@@ -198,30 +222,32 @@ void parser::getNFA(string line)
                         char c = i;
                         s.push_back(c);
                         NFA g3,test;
-                        g3= test.create_NFA(s);
-                        g2 = g2.concatenate(g2,g3);
+                        g3= g3.create_NFA(s);
+                        g2 = g2.Union(g2,g3);
                     }
+                    resultIn = g2;
                     graphs.push(g2);
                     //printNFA(g);
                 }
                 else
                 {
-                    unordered_map<string,NFA*>::const_iterator found = definitions.find(token);
+                    unordered_map<string,NFA>::const_iterator found = definitions.find(token);
+                    NFA G;
+
                     if(found != definitions.end())
                     {
-                        g = clone(definitions[token]);
+                        resultIn = definitions[token];
+                        point=true;
                     }
                     else if(token.length()==0)
                     {
-                        NFA G,GBuilder;
-                        G = GBuilder.create_NFA("");
+                        resultIn = G.create_NFA("");
 
                         //printNFA(g);
                     }
                     else
                     {
-                        NFA G,GBuilder;
-                        G = GBuilder.create_NFA("");
+                        G = G.create_NFA("");
                         //cout << "token to be added now" << token << endl;
                         for(int i = 0; i < token.length(); i++)
                         {
@@ -230,26 +256,28 @@ void parser::getNFA(string line)
                                 continue;
                             }
                             c.push_back(token[i]);
-                            G = GBuilder.create_NFA(c);
+                            NFA G2 = G2.create_NFA(c);
+                            resultIn = G.Union(G,G2);
                         }
 
                     }
+                    graphs.push(resultIn);
                 }
-              //  st.push(g);
+
             }
         }
         //cout << acceptance << " ended drawing" << endl;
-        NFA *g ;
+        NFA g ;
         //cout << "returned" << endl;
         //printNFA(g);
         if(!match1[2].compare("="))
         {
-            definitions[acceptance] = g;
+            definitions[acceptance] = resultIn;
             //      setWeights(g);
         }
         else
         {
-            expressions[acceptance] = g;
+            expressions[acceptance] = resultIn;
             expNames.push_back(acceptance);
         }
     }
@@ -580,39 +608,6 @@ NFA* parser::clone(NFA* g)
 }
 
 
-
-void parser::printNFA(NFA* g)
-{
-    cout << "started printing" <<endl;
-    state oldst = g->get_start_state();
-    queue<state> current;
-    current.push(oldst);
-    while(!current.empty())
-    {
-        state tmp = current.front();
-        cout << "I am " << tmp.num << endl;
-        current.pop();
-        tmp.visited = true;
-        vector<edge>* children = &tmp.children;
-        for(int i=0; i < children->size(); i++)
-        {
-            edge e = (*children)[i];
-            state to = e.to;
-            cout << "My Child " << to.num;
-            cout << "  length of weight : " << e.weight.length();
-            cout << "  weight : " << e.weight << endl;
-            if(!to.visited)
-            {
-                current.push(to);
-            }
-        }
-    }
-    //cout<< "clearing" << endl;
-    g->clear_visited();
-    //cout << "ended printing" <<endl;
-    //cout << endl;
-    //cout << endl;
-}
 
 vector<string> parser::get_weights()
 {

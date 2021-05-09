@@ -15,7 +15,6 @@ public:
 
     virtual ~parser();
 
-    void printNFA(NFA* g);
 
 protected:
 
@@ -23,8 +22,8 @@ private:
     string RegexFile;
     vector<string> Regex;
     int statenum = 0;
-    unordered_map<string,NFA*> definitions;
-    unordered_map<string,NFA*> expressions;
+    unordered_map<string,NFA> definitions;
+    unordered_map<string,NFA> expressions;
     vector<string> expNames;
     vector<string> weights;
 

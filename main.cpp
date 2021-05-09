@@ -7,7 +7,7 @@ int main() {
 
 
     gr->getFullNFA();
-    vector<string> weights = gr->get_weights();
+   /* vector<string> weights = gr->get_weights();
     for(int i=0; i< weights.size(); i++)
     {
         cout << "\t" <<weights[i] << endl;
@@ -17,6 +17,7 @@ int main() {
     for(int i=0; i< expNames.size(); i++) {
         cout << "\t" << expNames[i] << endl;
     }
+    */
     return 0;
 }
 /*
