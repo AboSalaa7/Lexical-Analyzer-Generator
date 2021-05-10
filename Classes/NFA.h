@@ -1,4 +1,3 @@
-
 #ifndef LEXICAL_AANALYZER_GENERATOR_NFA_H
 #define LEXICAL_AANALYZER_GENERATOR_NFA_H
 #include <bits/stdc++.h>
@@ -42,6 +41,7 @@ public:
     vector<state> states;
     NFA create_NFA(string token);
     NFA kleene_closure(NFA a);
+    NFA positiveClosure(string token);
     NFA concatenate(NFA& a, NFA& b);
     NFA renamestates(NFA a, NFA b);
     NFA Union(NFA& a, NFA& b);
