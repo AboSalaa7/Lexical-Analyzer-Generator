@@ -252,8 +252,15 @@ void parser::getNFA(string line)
                                 continue;
                             }
                             c.push_back(token[i]);
-                            NFA G2 = G2.create_NFA(c);
+                                                     //   cout<<"before error"<<endl;
+                                                     //   cout<<c<<endl;
+
+                            NFA G2;
+                            G2.create_NFA(c);
+                                                     //   cout<<"before error"<<endl;
+
                             resultIn = G.Union(G,G2);
+                            cout<<"end error"<<endl;
                         }
 
                     }

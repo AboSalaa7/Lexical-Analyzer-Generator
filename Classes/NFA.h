@@ -43,7 +43,9 @@ public:
     NFA kleene_closure(NFA a);
     NFA positiveClosure(string token);
     NFA concatenate(NFA& a, NFA& b);
+    void insertingVectorb(NFA b);
     NFA renamestates(NFA a, NFA b);
+    NFA renameallstates(NFA res);
     NFA Union(NFA& a, NFA& b);
     state get_start();
     void set_start(state a);
