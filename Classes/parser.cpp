@@ -93,7 +93,7 @@ void parser::getNFA(string line)
                 string c = "";
                 c.push_back(token[i]);
                 g2 = test.create_NFA(c);
-                result = test2.Union(result,g2);
+                result.Union(result,g2);
             }
 
             //printNFA(g);
@@ -127,7 +127,7 @@ void parser::getNFA(string line)
                 string c = "";
                 c.push_back(token[i]);
                 g2 = test.create_NFA(c);
-                result = test2.Union(result,g2);
+                result.Union(result,g2);
                 g2.print_NFA();
                 cout << c << endl;
 
@@ -185,7 +185,7 @@ void parser::getNFA(string line)
                         G2 = graphs.top();
                         graphs.pop();
                         //cout<<"entered or"<<endl;
-                        resultIn = resultIn.Union(G1,G2);
+                        resultIn = G1.Union(G1,G2);
                         //printNFA(g);
                         break;
                     case '#':
@@ -193,7 +193,7 @@ void parser::getNFA(string line)
                         graphs.pop();
                         G2 = graphs.top();
                         graphs.pop();
-                        resultIn = resultIn.concatenate(G1,G2);
+                        resultIn = G1.concatenate(G1,G2);
                         break;
                 }
                 graphs.push(resultIn);
@@ -260,7 +260,7 @@ void parser::getNFA(string line)
                                                      //   cout<<"before error"<<endl;
 
                             resultIn = G.Union(G,G2);
-                            cout<<"end error"<<endl;
+                           // cout<<"end error"<<endl;
                         }
 
                     }
