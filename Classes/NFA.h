@@ -41,7 +41,7 @@ public:
     vector<state> states;
     NFA create_NFA(string token);
     NFA kleene_closure(NFA a);
-    NFA positiveClosure(string token);
+    NFA positiveClosure(NFA a);
     NFA concatenate(NFA& a, NFA& b);
     void insertingVectorb(NFA b);
     NFA renamestates(NFA a, NFA b);

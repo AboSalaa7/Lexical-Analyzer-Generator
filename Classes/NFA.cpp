@@ -175,12 +175,56 @@ NFA NFA::kleene_closure(NFA a) {
 }
 
 
-NFA NFA::positiveClosure(string token){
-    NFA result;
+NFA NFA::positiveClosure(NFA a){
+   /* NFA result;
     result.create_NFA(token);
     edge edge = { token, result.get_end(), result.get_end() };
-    result.get_end().children.push_back(edge);
-    return result;
+    result.get_end().children.push_back(edge);*/
+    NFA b = a;
+    state starta = a.get_start();
+    state enda = a.get_end();
+    state sec_state, end_new;
+
+    starta.is_accepted = false;
+    enda.is_accepted = false;
+    sec_state.is_accepted = false;
+    end_new.is_accepted = true;
+
+
+    lastnum = enda.num+1;
+    sec_state.num = lastnum++;
+    end_new.num = lastnum++;
+
+
+    edge edge1 = { "", sec_state, starta};
+    edge edge2 = { "", enda, end_new };
+    edge edge3 = { "", enda, starta };
+    edge edge4 = { "", sec_state, end_new};
+
+    sec_state.children.push_back(edge1);
+    sec_state.children.push_back(edge4);
+    enda.children.push_back(edge2);
+    enda.children.push_back(edge3);
+
+
+    int is = Findindex_states(a, starta);
+    int ie = Findindex_states(a, enda);
+    this->states.at(is) = starta;
+    this->states.at(ie) = enda;
+    this->states.push_back(sec_state);
+    this->states.push_back(end_new);
+    this->set_start(sec_state);
+    this->set_end(end_new);
+
+
+    b.concatenate(b,(*this));
+    (*this)=b;
+
+    NFA renamed = renameallstates(*this);
+    this->states = renamed.states;
+    this->set_start(renamed.get_start());
+    this->set_end(renamed.get_end());
+    return *this;
 }
 
 
@@ -205,8 +249,8 @@ void print_NFAs(NFA s) {
 
 NFA NFA::concatenate(NFA& a, NFA& b) {
 
-    NFA newb = renamestates(a,b);
 
+    NFA newb = renamestates(a,b);
     state enda = a.get_end();
     state startb = newb.get_start();
     int endanum = enda.num;
@@ -214,45 +258,17 @@ NFA NFA::concatenate(NFA& a, NFA& b) {
     enda.is_accepted = false;
 
     int iea = Findindex_states(a, a.get_end());
-    a.states.at(iea) = enda;
+    this->states.at(iea) = enda;
 
     int isb = Findindex_states(newb, startb);
     newb.states.erase(newb.states.begin() + isb);
-   /* print_NFAs(a);
-    cout<<"done"<<endl;
-    print_NFAs(newb);
-    cout<<"done"<<endl;*/
-
-    /*this->states.resize(a.states.size() + newb.states.size());
-    cout<<this->states.size()<<" done"<<endl;*/
-  /*  cout<<"this"<<endl;
-    this->print_NFA();
-    cout<<"a"<<endl;
-    a.print_NFA();
-    cout<<"b"<<endl;
-    b.print_NFA();*/
-   /* this->states.reserve( a.states.size() + newb.states.size() ); // preallocate memory
-  //  this->states.insert( this->states.end(), a.states.begin(), a.states.end() );
-
-    this->states.insert( this->states.end(), newb.states.begin(), newb.states.end() );*/
 
     insertingVectorb(newb);
 
-   /* std::copy(newb.states.begin(), newb.states.end(), this->states.begin() + a.states.size());
-
-    if(newb.states.size() == 2) {
-        this->states.push_back(newb.states.at(1));
-    }
-    else{
-        this->states.insert( a.states.end(), newb.states.begin() , newb.states.end() );
-    }
-    */
     this->set_start(a.get_start());
     this->set_end(newb.get_end());
-    NFA renamed = renameallstates(*this);
 
-    /*cout<<"renamed"<<endl;
-    renamed.print_NFA();*/
+    NFA renamed = renameallstates(*this);
     this->states = renamed.states;
     this->set_start(renamed.get_start());
     this->set_end(renamed.get_end());
@@ -264,8 +280,6 @@ void NFA::insertingVectorb(NFA b) {
     for (int i = 0; i < b.states.size(); i++) {
         this->states.push_back(b.states.at(i));
     }
-
-
 }
 
 
@@ -494,7 +508,7 @@ NFA::~NFA()
 {
     //don't forget Destructor in c++ => no garbage collector
 }
-/*
+
 int main() {
     NFA test,res,k;
     string a = "a";
@@ -507,6 +521,10 @@ int main() {
    // res.print_NFA();
     NFA z = k.create_NFA(c);
    // z.print_NFA();
+   x.concatenate(x,y);
+   x.positiveClosure(x);
+   x.print_NFA();
+   /*
     test.concatenate(test,test);
    // test.print_NFA();
     test.concatenate(test,x);
@@ -530,6 +548,7 @@ int main() {
     test.print_NFA();
     test.Union(test,k);
     test.print_NFA();
+    */
     return 0;
 }
-*/
+

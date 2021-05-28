@@ -20,7 +20,7 @@ NFA* parser::getFullNFA()
     }
     for(int i=0; i< expNames.size(); i++)
     {
-        NFA g2 = expressions[expNames[i]];
+        g2 = expressions[expNames[i]];
         state start;
         state st2 = g2.get_start_state();
         edge e1;
@@ -29,8 +29,8 @@ NFA* parser::getFullNFA()
         e1.weight = "";
         start.children.push_back(e1);
     }
-   // setWeights(g);
-    //   printNFA(g);
+    //setWeights(g2);
+    g2.print_NFA();
     return NULL;
 }
 
@@ -170,7 +170,7 @@ void parser::getNFA(string line)
                     case '+':
                         G1 = graphs.top();
                         graphs.pop();
-                        resultIn = G1.positiveClosure(acceptance);
+                        resultIn = G1.positiveClosure(G1);
                         //printNFA(g);
                         break;
                     case '*':
