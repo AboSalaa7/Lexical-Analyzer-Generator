@@ -51,6 +51,7 @@ public:
     void set_start(state a);
     state get_end();
     void set_end(state a);
+    NFA updateState(NFA a, state s);
     void set_NFA(NFA a);
     void print_NFA();
     int Findindex_states(NFA a, state find);

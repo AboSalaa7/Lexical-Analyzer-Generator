@@ -98,27 +98,16 @@ NFA NFA::create_NFA(string token) {
 
     start.num = lastnum++;
     end.num = lastnum++;
-                            //cout<<"create :before error1"<<endl;
-
-
-
     edge edge = { token, start, end };
-                               // cout<<"create :before error2"<<endl;
-
-
 
     start.children.push_back(edge);
-                              //  cout<<"create :before error3"<<endl;
-
 
     this->set_start(start);
-                                //    cout<<"create :before error4"<<endl;
 
     this->set_end(end);
 
     this->states.push_back(start);
     this->states.push_back(end);
-                             //   cout<<"create :before error5"<<endl;
 
     return *this;
 }
@@ -164,7 +153,9 @@ NFA NFA::kleene_closure(NFA a) {
     int is = Findindex_states(a, start);
     int ie = Findindex_states(a, end);
     this->states.at(is) = start;
+    (*this) = updateState((*this) , start);
     this->states.at(ie) = end;
+    (*this) = updateState((*this) , end);
 
    // this->print_NFA();
     NFA renamed = renameallstates(*this);
@@ -210,7 +201,9 @@ NFA NFA::positiveClosure(NFA a){
     int is = Findindex_states(a, starta);
     int ie = Findindex_states(a, enda);
     this->states.at(is) = starta;
+    (*this) = updateState((*this) , starta);
     this->states.at(ie) = enda;
+    (*this) = updateState((*this) , enda);
     this->states.push_back(sec_state);
     this->states.push_back(end_new);
     this->set_start(sec_state);
@@ -248,8 +241,6 @@ void print_NFAs(NFA s) {
 
 
 NFA NFA::concatenate(NFA& a, NFA& b) {
-
-
     NFA newb = renamestates(a,b);
     state enda = a.get_end();
     state startb = newb.get_start();
@@ -259,6 +250,7 @@ NFA NFA::concatenate(NFA& a, NFA& b) {
 
     int iea = Findindex_states(a, a.get_end());
     this->states.at(iea) = enda;
+    (*this) = updateState((*this) , enda);
 
     int isb = Findindex_states(newb, startb);
     newb.states.erase(newb.states.begin() + isb);
@@ -398,12 +390,17 @@ NFA NFA::Union(NFA& a, NFA& b) {
 
     int isa = Findindex_states(a, a.get_start());
     a.states.at(isa) = starta;
+    a = updateState(a, starta);
     int iea = Findindex_states(a, a.get_end());
     a.states.at(iea) = enda;
+    a = updateState(a, enda);
+
     int isb = Findindex_states(newb, newb.get_start());
     newb.states.at(isb) = startb;
+    newb = updateState(newb, startb);
     int ieb = Findindex_states(newb, newb.get_end());
     newb.states.at(ieb) = endb;
+    newb = updateState(newb, endb);
 
     NFA res = a;
     //a.print_NFA();
@@ -437,7 +434,6 @@ state NFA::get_start() {
 
 void NFA::set_start(state a){
     this->start=a;
-
 }
 
 state NFA::get_end() {
@@ -445,9 +441,24 @@ state NFA::get_end() {
 }
 
 void NFA::set_end(state a){
-    this->end=a;
-
+    this->end = a;
 }
+
+
+NFA NFA::updateState(NFA a, state s) {
+    for (int j = 0; j < a.states.size(); j++) {        //states
+        for (int k = 0; k < a.states[j].children.size(); k++) {     //from j to k
+            if(a.states[j].children[k].to.num == s.num) {
+                a.states[j].children[k].to = s;
+            }
+            if(a.states[j].children[k].from.num == s.num) {
+                a.states[j].children[k].from = s;
+            }
+        }
+    }
+    return a;
+}
+
 
 void NFA::set_NFA(NFA a){
     (*this) = a;
@@ -458,15 +469,20 @@ void NFA::print_NFA() {
     state start = this->get_start();
     state end = this->get_end();
     cout << "start  = "<< start.num<<endl;
+    cout <<"start accepted = "<< start.is_accepted<<endl;
     cout << "end  = "<< end.num<<endl;
+    cout <<"end accepted = "<< end.is_accepted<<endl;
 
     for (vector<state>::iterator it = states.begin(); it != states.end(); ++it) {
-        cout << it->num << ": ";
+        cout << it->num << "(accepted = " <<it->is_accepted << ") "<<": ";
         vector<edge> edges = it->children;
         for (vector<edge>::iterator jit = edges.begin(); jit != edges.end(); ++jit) {
             state t = jit->to;
+            state k = jit->from;
+         //   cout <<"(" <<k.num << ") ";
             cout << t.num << " ";
-            cout << "(weight = " <<jit->weight << "), ";
+            cout << "(weight = " <<jit->weight << ") ";
+            cout << "(accepted = " <<t.is_accepted << "), ";
         }
         cout << endl;
     }
@@ -485,6 +501,7 @@ int NFA::Findindex_states(NFA a, state find) {
     }
     return count;
 }
+
 
 int NFA::count_weights(){
     for (vector<state>::iterator it = states.begin(); it != states.end(); ++it) {
@@ -508,7 +525,7 @@ NFA::~NFA()
 {
     //don't forget Destructor in c++ => no garbage collector
 }
-
+/*
 int main() {
     NFA test,res,k;
     string a = "a";
@@ -516,15 +533,16 @@ int main() {
     string c = "c";
     //aaa+b*bba+ccc*
     NFA x = test.create_NFA(a);
-   // test.print_NFA();
+    test.print_NFA();
     NFA y = res.create_NFA(b);
-   // res.print_NFA();
+    res.print_NFA();
     NFA z = k.create_NFA(c);
-   // z.print_NFA();
+    z.print_NFA();
    x.concatenate(x,y);
+   x.print_NFA();
    x.positiveClosure(x);
    x.print_NFA();
-   /*
+
     test.concatenate(test,test);
    // test.print_NFA();
     test.concatenate(test,x);
@@ -548,7 +566,7 @@ int main() {
     test.print_NFA();
     test.Union(test,k);
     test.print_NFA();
-    */
+
     return 0;
 }
-
+*/
