@@ -157,7 +157,7 @@ NFA NFA::kleene_closure(NFA a) {
     this->states.at(ie) = end;
     (*this) = updateState((*this) , end);
 
-   // this->print_NFA();
+    // this->print_NFA();
     NFA renamed = renameallstates(*this);
     this->states = renamed.states;
     this->set_start(renamed.get_start());
@@ -167,10 +167,10 @@ NFA NFA::kleene_closure(NFA a) {
 
 
 NFA NFA::positiveClosure(NFA a){
-   /* NFA result;
-    result.create_NFA(token);
-    edge edge = { token, result.get_end(), result.get_end() };
-    result.get_end().children.push_back(edge);*/
+    /* NFA result;
+     result.create_NFA(token);
+     edge edge = { token, result.get_end(), result.get_end() };
+     result.get_end().children.push_back(edge);*/
     NFA b = a;
     state starta = a.get_start();
     state enda = a.get_end();
@@ -359,12 +359,12 @@ NFA NFA::Union(NFA& a, NFA& b) {
     endb.is_accepted = false;
     start_new.is_accepted = false;
     end_new.is_accepted = true;
-   // newb.print_NFA();
+    // newb.print_NFA();
 
- /*   cout<<"starta.num "<<starta.num<<endl;
-    cout<<"enda.num "<<enda.num<<endl;
-    cout<<"startb.num "<<startb.num<<endl;
-    cout<<"endb.num "<<endb.num<<endl;*/
+    /*   cout<<"starta.num "<<starta.num<<endl;
+       cout<<"enda.num "<<enda.num<<endl;
+       cout<<"startb.num "<<startb.num<<endl;
+       cout<<"endb.num "<<endb.num<<endl;*/
     if(endb.num > enda.num) {
         lastnum = endb.num+1;
     }
@@ -372,11 +372,11 @@ NFA NFA::Union(NFA& a, NFA& b) {
         lastnum = enda.num+1;
     }
 
-   // cout<<"lastnum"<<lastnum<<endl;
+    // cout<<"lastnum"<<lastnum<<endl;
     start_new.num = lastnum++;
     end_new.num = lastnum++;
-   /* cout<<"start_new.num "<<start_new.num<<endl;
-    cout<<"end_new.num "<<end_new.num<<endl;*/
+    /* cout<<"start_new.num "<<start_new.num<<endl;
+     cout<<"end_new.num "<<end_new.num<<endl;*/
 
     edge edge1 = { "", start_new, starta};
     edge edge2 = { "", start_new, startb};
@@ -404,24 +404,24 @@ NFA NFA::Union(NFA& a, NFA& b) {
 
     NFA res = a;
     //a.print_NFA();
-   //newb.print_NFA();
-   // res.states.insert( res.states.end(), newb.states.begin() , newb.states.end() );
+    //newb.print_NFA();
+    // res.states.insert( res.states.end(), newb.states.begin() , newb.states.end() );
 
-   /* this->states.reserve( res.states.size() + newb.states.size() ); // preallocate memory
+    /* this->states.reserve( res.states.size() + newb.states.size() ); // preallocate memory
 
-    this->states.insert( this->states.end(), newb.states.begin(), newb.states.end() );*/
+     this->states.insert( this->states.end(), newb.states.begin(), newb.states.end() );*/
     insertingVectorb(newb);
     this->states.push_back(start_new);
     this->states.push_back(end_new);
-   // this->states = res.states;
+    // this->states = res.states;
 
     this->set_start(start_new);
     this->set_end(end_new);
 
     //this->print_NFA();
     NFA renamed = renameallstates(*this);
-   /* cout<<"renamed"<<endl;
-    renamed.print_NFA();*/
+    /* cout<<"renamed"<<endl;
+     renamed.print_NFA();*/
     this->states = renamed.states;
     this->set_start(renamed.get_start());
     this->set_end(renamed.get_end());
@@ -479,7 +479,7 @@ void NFA::print_NFA() {
         for (vector<edge>::iterator jit = edges.begin(); jit != edges.end(); ++jit) {
             state t = jit->to;
             state k = jit->from;
-         //   cout <<"(" <<k.num << ") ";
+            //   cout <<"(" <<k.num << ") ";
             cout << t.num << " ";
             cout << "(weight = " <<jit->weight << ") ";
             cout << "(accepted = " <<t.is_accepted << "), ";

@@ -6,11 +6,13 @@
 #include <vector>
 #include <string>
 #include "NFA.h"
+
 struct D_Edge;
 struct D_State {
     int num;
     vector<D_Edge> children;
     vector<state> sub_states;
+    string accepted_token;
     bool is_accepted;
     bool is_visited;
 };
@@ -31,12 +33,15 @@ public:
     vector<vector<D_State>> Partition;
 
 
+
     void create_DFA();
     int check_unvisited();
     D_State check_if_exist(D_State e_state,D_Edge edge);
     D_State e_closure(  D_State state,D_Edge edge);
+    D_State move( D_State T, string symbol );
     void print_DFA();
     void set_start(D_State s);
+    D_State get_start();
     void add_state(D_State s);
     void minimization();
     void print_current(vector<D_State> current);
@@ -50,8 +55,7 @@ private:
 };
 
 
-extern int last_num=0;
-extern int id=0;
+
 
 
 #endif //LEXICAL_ANALYZER_GENERATOR_NFA_H
