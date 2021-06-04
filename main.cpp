@@ -1,10 +1,11 @@
 #include <iostream>
 #include <bits/stdc++.h>
-#include "Classes/NFA.h"
-#include "Classes/parser.h"
-int main() {
-    parser* gr = new parser("regex.txt","output.txt");
+#include "NFA.h"
+#include "parser.h"
+#include "CFGParser.h"
 
+int main() {
+   /* parser* gr = new parser("regex.txt","output.txt");
 
     gr->getFullNFA();
 
@@ -26,38 +27,30 @@ int main() {
         NFA g = allExpressions[expNames[i]];
         final = final.Union(final,g);
 
-    }
-
+    }*/
+    CFGParser* gr = new CFGParser("grammar.txt");
+    gr->parseFile();
 
     return 0;
 }
 /*
  #include "state.h"
-
 using namespace std;
-
 class graph
 {
 public:
     graph();
-
     void set_start_state(state start);
     state get_start_state();
-
     void set_end_state(state end);
     state get_end_state();
-
     void set_graph_size(int s);
     int get_graph_size();
     void clear_visited();
-
     virtual ~graph();
-
 private:
     state start;
     state end;
     int graph_size =0 ;
 };
-
  */
-
