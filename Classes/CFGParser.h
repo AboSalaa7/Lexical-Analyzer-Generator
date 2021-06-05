@@ -18,6 +18,7 @@ class CFGParser
     public:
         CFGParser(string file);
         void parseFile();
+        vector<prule> prules;
 
         virtual ~CFGParser();
 

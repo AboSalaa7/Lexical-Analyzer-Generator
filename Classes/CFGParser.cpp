@@ -1,3 +1,4 @@
+
 #include "CFGParser.h"
 
 CFGParser::CFGParser(string file)
@@ -7,7 +8,7 @@ CFGParser::CFGParser(string file)
 
 
 void CFGParser::parseFile() {
-vector<prule> prules;
+//vector<prule> prules;
 
     ifstream inFile;
     inFile.open (this->grammerFile);
@@ -92,4 +93,3 @@ string CFGParser::trim(const string &s) {
 CFGParser::~CFGParser()
 {
 }
-
