@@ -11,11 +11,16 @@ public:
 
     void get_first();
     void get_follow();
+    void create_table();
+
     vector<vector<vector<string>>> productions;
     vector <string> nons;
+    vector <string> terminals;
+    vector<vector<string>> parse_table;
     map<string, vector<string>> firsts;
     map<string, vector<string>> follows;
-    typedef multimap<string, string>::iterator MMAPIterator;
+
+
 
 
 
@@ -24,7 +29,6 @@ public:
 
 private:
     vector<string> find_productions(string start);
-    int find_ix(string prod);
     bool check_eps(string prod);
     bool check_all_eps(vector<string> prod);
     void update_productions(string x);
