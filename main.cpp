@@ -1,11 +1,12 @@
 #include <iostream>
 #include <bits/stdc++.h>
-#include "NFA.h"
-#include "parser.h"
-#include "CFGParser.h"
 
+#include "table.h"
+#include "CFGParser.h"
 int main() {
-   /* parser* gr = new parser("regex.txt","output.txt");
+    /*
+    parser* gr = new parser("regex.txt","output.txt");
+
 
     gr->getFullNFA();
 
@@ -27,30 +28,127 @@ int main() {
         NFA g = allExpressions[expNames[i]];
         final = final.Union(final,g);
 
-    }*/
-    CFGParser* gr = new CFGParser("grammar.txt");
+    }
+
+    DFA dfa;
+    dfa.nfa=final;
+    dfa.create_DFA();
+    //dfa.print_DFA();
+    dfa.minimization();
+    //dfa.print_mini();
+    cout<<"\n*\n*\n*\n*"<<endl;
+    dfa.print_DFA();
+
+    */
+    /*
+    table t;
+
+    vector<vector<string>> a = {{"T","E'"}};
+    vector<vector<string>> b = {
+                                {"'+'","T","E'"},
+                                {"''"}  };
+    vector<vector<string>> c = {{"F","T'"}};
+    vector<vector<string>> d = {
+                                {"'*'","F","T'"},
+                                {"''"}
+                                };
+
+    vector<vector<string>> e = {
+                                {"'('","E","')'"},
+                                {"'id'"},
+                                {"''"}
+                                };
+
+
+
+
+    t.productions.push_back(a);
+    t.productions.push_back(b);
+    t.productions.push_back(c);
+    t.productions.push_back(d);
+    t.productions.push_back(e);
+
+    t.nons ={"E","E'","T","T'","F"};
+
+/*
+vector<vector<string>> a = {
+                                {"A","'b'","S"},
+                                {"'e'"},
+                                {"''"} };
+    vector<vector<string>> b = {{"'a'"},
+                               {"'c'","A","'d'"}  };
+
+    t.productions.push_back(a);
+    t.productions.push_back(b);
+
+    t.nons ={"S","A"};
+    */
+/*
+    t.get_first();
+    t.get_follow();
+    cout<<"-----"<<t.firsts.size()<<endl;
+    cout<<"-----"<<t.follows.size()<<endl;
+
+
+cout<<"firsts"<<endl;
+for(auto it = t.firsts.cbegin(); it != t.firsts.cend(); ++it)
+{
+    cout << it->first << " : |" ;
+    for (int i=0;i<it->second.size();i++)
+        cout<<it->second[i]<<"|";
+    cout<<endl;
+}
+
+cout<<"follows"<<endl;
+for(auto it = t.follows.cbegin(); it != t.follows.cend(); ++it)
+{
+    cout << it->first << " : |" ;
+    for (int i=0;i<it->second.size();i++)
+        cout<<it->second[i]<<"|";
+    cout<<endl;
+}
+*/
+
+ CFGParser* gr = new CFGParser("grammar.txt");
     gr->parseFile();
 
-    return 0;
+
+  table t;
+
+
+    for (int i=0;i<gr->prules.size();i++){
+        t.nons.push_back(gr->prules[i].lhs);
+        vector<vector<string>> prods =gr->prules[i].rhs;
+        t.productions.push_back(prods);
+
+
 }
-/*
- #include "state.h"
-using namespace std;
-class graph
+
+    t.get_first();
+    t.get_follow();
+    cout<<"-----"<<t.firsts.size()<<endl;
+    cout<<"-----"<<t.follows.size()<<endl;
+
+
+cout<<"firsts"<<endl;
+for(auto it = t.firsts.cbegin(); it != t.firsts.cend(); ++it)
 {
-public:
-    graph();
-    void set_start_state(state start);
-    state get_start_state();
-    void set_end_state(state end);
-    state get_end_state();
-    void set_graph_size(int s);
-    int get_graph_size();
-    void clear_visited();
-    virtual ~graph();
-private:
-    state start;
-    state end;
-    int graph_size =0 ;
-};
- */
+    cout << it->first << " : |" ;
+    for (int i=0;i<it->second.size();i++)
+        cout<<it->second[i]<<"|";
+    cout<<endl;
+}
+
+cout<<"\n\nfollows"<<endl;
+for(auto it = t.follows.cbegin(); it != t.follows.cend(); ++it)
+{
+    cout << it->first << " : |" ;
+    for (int i=0;i<it->second.size();i++)
+        cout<<it->second[i]<<"|";
+    cout<<endl;
+}
+
+    return 0;
+
+}
+
