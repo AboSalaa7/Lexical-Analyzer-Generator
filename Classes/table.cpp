@@ -319,22 +319,20 @@ void table::create_table()
                 auto it = find(nons.begin(), nons.end(), x);
                 if (it != nons.end())
                     ix = it - nons.begin();
-
+                string prod;
+                cout<<"prod: "<<prod<<endl;
+                for (int k=0; k<productions[i][j].size(); k++)
+                    prod+= productions[i][j][k];
                 for (int m=0; m<terminals.size(); m++)
                 {
                     if (table[ix][m]!="")
-                        table[i][m]=table[ix][m];
-
-
-
+                        table[i][m]=prod;
                 }
-
-
-            }
 
 
         }
     }
+        }
     for (int i=0; i<nons.size(); i++)
     {
         vector<string> x;
@@ -351,7 +349,7 @@ void table::create_table()
     {
         for (int j=0; j<parse_table[i].size(); j++)
         {
-            if(parse_table[i][j]!="")
+            //if(parse_table[i][j]!="")
                 cout<<parse_table[i][j]<<" | ";
 
         }
