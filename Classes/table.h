@@ -1,6 +1,8 @@
 #ifndef PARSER_TABLE_H
 #define PARSER_TABLE_H
 #include <bits/stdc++.h>
+#include <iostream>
+#include <fstream>
 using namespace std;
 
 
@@ -12,7 +14,7 @@ public:
     void get_first();
     void get_follow();
     void create_table();
-
+    void printTable();
     vector<vector<vector<string>>> productions;
     vector <string> nons;
     vector <string> terminals;
