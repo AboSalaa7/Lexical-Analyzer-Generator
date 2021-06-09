@@ -18,17 +18,16 @@ void TokenParser::fillTokens(vector<string> &lines, string inputFile) {
 string TokenParser::getNextToken(int index) {
     return this->tokens[index];
 }
-/*
-string TokenParser::MatchToken() {
-    return std::__cxx11::string();
-}
-*/
+
 TokenParser::TokenParser(std::string outputFile) {
     this->outputFile = outputFile;
+    output.open(outputFile);
 }
 
 void TokenParser::Parse() {
+
     currentState.push(nonTerminals[0]);
+    output<< currentState.top()<< endl;
     for(int i = 0 ; i < this->tokens.size() ; i ++) {
 
         if (currentState.size() ==0 )
@@ -37,8 +36,7 @@ void TokenParser::Parse() {
         string tok = getNextToken(i);
         string currentTop = this->currentState.top();
 
-        //cout << "toS: "<<currentTop << endl;
-
+       //check if the top of stack is non-terminal
         vector<string>::iterator it;
         it = std::find(nonTerminals.begin(), nonTerminals.end(), currentTop);
 
@@ -47,7 +45,7 @@ void TokenParser::Parse() {
             // non terminal on top of stack
 
             int terminalNo = it - nonTerminals.begin();
-           // cout << ">>>>"<<this->nonTerminals[terminalNo] << endl;
+            //check if the input token is a terminal symbol
             vector<string>::iterator itTerminal;
             itTerminal = std::find(terminals.begin(), terminals.end(), tok);
 
@@ -58,17 +56,19 @@ void TokenParser::Parse() {
                 if(parsingTable[terminalNo][tokenNo].compare("") == 0){
                     //error
                     // no entry in the table
+                    this->output << "empty table entry for token:" << tok << endl;
+                    this->output << "skipping token" << endl;
 
                 } else{
                     // replace nonTerminal with terminals in the stack
 
-                  if (parsingTable[terminalNo][tokenNo]!="''")
-                    replaceNonTerminals(currentState,parsingTable[terminalNo][tokenNo]);
-                else{
-                    currentState.pop();
-                    cout<<"HERE :"<<endl;
+                    if (parsingTable[terminalNo][tokenNo]!="''")
+                        replaceNonTerminals(currentState,parsingTable[terminalNo][tokenNo]);
+                    else{
+                        currentState.pop();
+                        //cout<<"HERE :"<<endl;
 
-                }
+                    }
 
                     i--;
                     continue;
@@ -77,16 +77,18 @@ void TokenParser::Parse() {
         } else if (currentTop.compare(tok) == 0) {
             //Case 1
             //match
-            cout << "MATCH: "<< tok<< endl;
+            this->output << "MATCH: "<< tok<< endl;
             currentState.pop();
 
 
             continue;
         } else {
             // error
-            cout << "fatal error :D" << endl;
+            this->output << "Error: Token has no match with the stack top" << endl;
+            this->output << "Skipping Token" << endl;
         }
     }
+    this->output.close();
 }
 
 void TokenParser::fillVectors(vector<string> non, vector<string> Terminals, vector<vector<string>> t) {
@@ -96,20 +98,6 @@ void TokenParser::fillVectors(vector<string> non, vector<string> Terminals, vect
 }
 
 void TokenParser::replaceNonTerminals(stack<string> &states, string tableEntry) {
-   /* //cout<<"replace tableEntry: "<<tableEntry<<endl;
-    stack<string> reversed;
-    string del = "'";
-    int start = 0;
-    int end = tableEntry.find(del);
-
-    while (end != -1) {
-        if(tableEntry.substr(start, end - start).size() > 0){
-            reversed.push(tableEntry.substr(start, end - start));
-        }
-        start = end + del.size();
-        end = tableEntry.find(del, start);
-    }*/
-
     vector <string> splits;
     stringstream check(tableEntry);
     string intermediate;
@@ -117,23 +105,16 @@ void TokenParser::replaceNonTerminals(stack<string> &states, string tableEntry) 
     while(getline(check, intermediate, ' '))
     {
         splits.push_back(intermediate);
-       // cout<<"splits: "<<intermediate<<endl;
+        // cout<<"splits: "<<intermediate<<endl;
     }
 
-   if (splits.size() >= 0 ) states.pop();
-   for(int i=splits.size()-1;i>0;i--){
+    if (splits.size() >= 0 ) states.pop();
+    for(int i=splits.size()-1;i>0;i--){
         if (splits[i][0]=='\'')
-        splits[i]=splits[i].substr(1,splits[i].size()-2);
-    states.push(splits[i]);
-    cout<<"PUSH:::::"<<splits[i]<<endl;
-   }
-/*
-    while(reversed.size() > 0 ){
-        string x = reversed.top();
-        states.push(x);
-        cout<<"PUSH:::::::"<<x<<endl;
-        reversed.pop();
-    }*/
+            splits[i]=splits[i].substr(1,splits[i].size()-2);
+        states.push(splits[i]);
+        this->output<<splits[i]<<endl;
+    }
 
 }
 
