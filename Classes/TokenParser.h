@@ -19,11 +19,11 @@ public:
     stack<string> currentState;
     string outputFile;
     vector<vector<string>> parsingTable;
+    ofstream output;
 
     TokenParser(std::string outputFile);
     void fillTokens(vector<string> &lines, string inputFile);
     string getNextToken(int index);
-   // string MatchToken();
     void Parse();
     void fillVectors(vector<string> non,vector<string> Terminals,vector<vector<string>> t);
     void replaceNonTerminals(stack<string> &states,string tableEntry);
@@ -31,4 +31,3 @@ public:
 
 
 #endif //SYNTAX_ANALYZER_TOKENPARSER_H
-
