@@ -6,13 +6,13 @@ int Find_index_states(state u,D_State e_state){
     for (int i=0;i<e_state.sub_states.size();i++) {
         if( e_state.sub_states[i].num== u.num)
             return i;
+
     }
     return -1;
 }
 
 
 D_State DFA::move( D_State T, string symbol ){
-
     D_State res;
     NFA nfa=this->nfa;
     for (int i=0; i<T.sub_states.size(); i++){
@@ -23,7 +23,6 @@ D_State DFA::move( D_State T, string symbol ){
                 break;
             }
         }
-
         for (int j=0; j<t.children.size(); j++){
             if (t.children[j].weight == symbol){
                 state u = t.children[j].to;
@@ -35,7 +34,6 @@ D_State DFA::move( D_State T, string symbol ){
     }
     return res;
 }
-
 
 D_State e_closuree(state state2, NFA nfa) {
 
@@ -106,25 +104,49 @@ void DFA::create_DFA(){
     this->states.at(id).is_visited=true;
     D_State unvisited = this->states[id];
 
+     bool flag=false;
+     vector<string> symbols ={"a","b"};
+    /* vector<string> symbols ={"a-z",
+                                 "A-Z",
+                                 "0-9",
+                                 "==","!=",">",">=","<","<=","=",
+                                 ";",",","(",")","{","}",
+                                 "+","-","*","/"  };*/
     while(id!=-1){
         this->states.at(id).is_visited=true;
         D_State unvisited = this->states[id];
 
-        vector<string> symbols ={"a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z",
-                                 "A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z",
-                                 "0","1","2","3","4","5","6","7","8","9",
-                                 "==","!=",">",">=","<","<=","=",
-                                 ";",",","(",")","{","}",
-                                 "+","-","*","/"  };
-
-
-        //  vector<string> symbols = parser.get_symbols();
         for (int i=0; i<symbols.size(); i++){
             D_State move_to=move( unvisited,symbols[i]);
             D_Edge edge = {symbols[i], unvisited, move_to};
             D_State U = e_closure(move_to,edge);
+            if (U.sub_states.size()==0  ){
+                    flag=true;
+                    D_State d ;
+                    d.num=-1;
+                    D_Edge e={symbols[i],unvisited,d};
+
+                   // unvisited.children.push_back(e);
+                     for (int i=0;i<this->states.size();i++) {
+                        if( this->states[i].num== unvisited.num){
+                            this->states.at(i).children.push_back(e);
+                            break;
+
+                        }
+                    }
+            }
         }
         id = check_unvisited();
+    }
+    if (flag){
+        D_State d;
+        d.num=-1;
+        for (int i=0;i<symbols.size();i++){
+            D_Edge e={symbols[i],d,d};
+            d.children.push_back(e);
+        }
+        this->states.push_back(d);
+
     }
     //cout<<"DFA create numberof states:"<<states.size()<<endl;
 }
@@ -184,9 +206,7 @@ D_State DFA::e_closure(D_State Dstate,D_Edge edge) {
             }
         }
     }
-    if (e_state.sub_states.size()==0)
-        this->dead_states.push_back(edge);
-    else
+    if (e_state.sub_states.size()>0)
         e_state=check_if_exist(e_state,edge);
 
     return e_state;
@@ -377,7 +397,7 @@ D_State DFA::get_start(){
     return this->states[0];
 }
 
-/*
+
 int main() {
     NFA a,b,c,d,e,f;
     a.create_NFA("a");
@@ -397,12 +417,10 @@ int main() {
     DFA dfa;
     dfa.nfa=a;
     dfa.create_DFA();
-
     dfa.print_DFA();
     dfa.minimization();
-    //dfa.print_mini();
     cout<<"\n\n\n\n\n"<<endl;
     dfa.print_DFA();
     return 0;
 }
-*/
+

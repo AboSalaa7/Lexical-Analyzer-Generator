@@ -4,9 +4,9 @@
 #include "parser.h"
 #include "table.h"
 #include "CFGParser.h"
-
+/*
 int main() {
-    parser* gr = new parser("regex.txt","output.txt");
+    parser* gr = new parser("regex.txt","input.txt");
 
     gr->getFullNFA();
 
@@ -20,7 +20,7 @@ int main() {
     temp.accepted_token = final.get_end().accepted_token;
     temp.is_accepted = false;*/
 
-    vector<string> expNames = gr->get_expressions();
+   /* vector<string> expNames = gr->get_expressions();
     cout << expNames.size() << endl;
     unordered_map<string,NFA> allExpressions = gr->get_allnfa();
     cout<<"heyyy"<<endl;
@@ -36,13 +36,14 @@ int main() {
     DFA dfa;
     dfa.nfa = final;
     dfa.create_DFA();
-    //dfa.print_DFA();
+    cout<<"dfa"<<endl;
+    dfa.print_DFA();
+    cout<<"end_dfa"<<endl;
     dfa.minimization();
     cout<<"minimized"<<endl;
-   // dfa.print_mini();
     dfa.print_DFA();
- //   gr->dfa =
-   // gr->readOpFile();
+    gr->dfa =dfa;
+    gr->readOpFile();
 
    /* CFGParser* gr = new CFGParser("grammar.txt");
     gr->parseFile();
@@ -76,7 +77,7 @@ int main() {
             cout<<it->second[i]<<"|";
         cout<<endl;
     }*/
-
+/*
     return 0;
 
 }

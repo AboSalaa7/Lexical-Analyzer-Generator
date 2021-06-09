@@ -14,6 +14,7 @@ public:
     unordered_map<string,NFA> get_allnfa();
     vector<string> getOpFile();
     void readOpFile();
+    DFA dfa;
 
     virtual ~parser();
 
@@ -43,7 +44,6 @@ private:
     bool isBinaryOp(string c);
 
     string parseToken(string token);
-    DFA dfa;
 
 };
 
