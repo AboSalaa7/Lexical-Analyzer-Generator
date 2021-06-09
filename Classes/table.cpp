@@ -112,7 +112,7 @@ void table::get_first()
                     if (it->second[k]!=""&&find(itt->second.begin(), itt->second.end(),it->second[k]) == itt->second.end())
                     {
                         itt->second.push_back(it->second[k]);
-                       // cout<<"from non terminalqqqqqqqqqq"<<i<<j<<it->second[k]<<endl;
+                        // cout<<"from non terminalqqqqqqqqqq"<<i<<j<<it->second[k]<<endl;
                     }
                 }
             }
@@ -227,14 +227,14 @@ void table::call(int q)
                         //cout<<"rule 3 :"<<nons[i]<<":"<<it->second.size()<<endl;
                         auto itt=follows.find(productions[i][j][k]);
                         //if (q==8&&i==9&&j==0&&k==1)
-                         //   cout<<"NEED :"<<it->second.size()<<endl;
+                        //   cout<<"NEED :"<<it->second.size()<<endl;
                         for (int m =0; m < it->second.size(); m++)
                         {
                             if (it->second[m]!="" &&find(itt->second.begin(), itt->second.end(),it->second[m]) == itt->second.end())
                             {
                                 itt->second.push_back( it->second[m]);  //
-                               // if (q==8)
-                                   // cout<<"from else terminalllllllllllllllllllllllll : "<<productions[i][j][k]<<">>"<<it->second[m]<<endl;
+                                // if (q==8)
+                                // cout<<"from else terminalllllllllllllllllllllllll : "<<productions[i][j][k]<<">>"<<it->second[m]<<endl;
                             }
                         }
                     }
@@ -261,14 +261,14 @@ void table::get_follow()
         call(q);
 
 //if go to eps update productions
-       /* if (check_eps(nons[q-1]))
-        {
-            update_productions(nons[q-1]);
-            call(q);
+        /* if (check_eps(nons[q-1]))
+         {
+             update_productions(nons[q-1]);
+             call(q);
 
 
-        }   //q --> q-1
-        */
+         }   //q --> q-1
+         */
     }
 
     for (int i=0; i<productions.size(); i++)
@@ -339,7 +339,7 @@ void table::create_table()
                     prod=prod+ productions[i][j][k];
                 }
 
-               // cout<<"proddddddddddddddddddd :"<<prod<<endl;
+                // cout<<"proddddddddddddddddddd :"<<prod<<endl;
                 for (int m=0; m<terminals.size(); m++)
                 {
                     if (table[ix][m]!="")
@@ -368,5 +368,33 @@ void table::create_table()
     }
 
 
+}
+
+void table::printTable() {
+   
+    ofstream output_stream("table.txt");
+    if (output_stream.is_open ()) {
+        output_stream << "******Printing Table******" << endl;
+        output_stream << setw(60) << left << "\t\t";
+        for (int i = 0 ; i < terminals.size(); i++)
+        {
+            output_stream << setw(60) << left << terminals[i] << "   ";
+        }
+        output_stream << endl;
+        for (int i = 0 ; i < nons.size(); i++)
+        {
+            output_stream << setw(60) << left << nons[i] << "   ";
+            for (int j = 0 ; j < terminals.size(); j++)
+            {
+                if(parse_table[i][j] == ""){
+                    output_stream << setw(60) << left <<"error" << "   ";
+                }
+                else output_stream << setw(60) << left <<parse_table[i][j] << "   ";
+            }
+            output_stream << endl;
+        }
+        output_stream << "******End printing Table******" << endl;
+    }
+    output_stream.close ();
 }
 
