@@ -2,7 +2,7 @@ int
 id
 ;
 id
-assign
+=
 num
 ;
 if
@@ -13,7 +13,7 @@ num
 )
 {
 id
-assign
+=
 num
 ;
 }

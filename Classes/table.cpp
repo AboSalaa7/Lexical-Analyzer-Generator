@@ -77,7 +77,7 @@ void table::get_first()
         {
             for (int k=0; k<productions[i][j].size(); k++)
             {
-                cout<<productions[i][j][k];
+                cout<<">"<<productions[i][j][k];
             }
         }
         cout<<endl;
@@ -112,7 +112,7 @@ void table::get_first()
                     if (it->second[k]!=""&&find(itt->second.begin(), itt->second.end(),it->second[k]) == itt->second.end())
                     {
                         itt->second.push_back(it->second[k]);
-                        //cout<<"from non terminalqqqqqqqqqq"<<i<<j<<it->second[k]<<endl;
+                       // cout<<"from non terminalqqqqqqqqqq"<<i<<j<<it->second[k]<<endl;
                     }
                 }
             }
@@ -133,8 +133,8 @@ void table::get_first()
                     int ix;
                     auto it = find(nons.begin(), nons.end(), takes[j]);
                     if (it != nons.end())
-                    ix = it - nons.begin();
-                   // int ix= find_ix(takes[j]);
+                        ix = it - nons.begin();
+                    // int ix= find_ix(takes[j]);
                     vector<vector<string>> prod = productions[ix];
                     for (int k=0; k<prod.size(); k++)
                     {
@@ -179,8 +179,6 @@ void table::get_first()
 
 
 
-
-
 void table::call(int q)
 {
 
@@ -192,9 +190,11 @@ void table::call(int q)
             {
                 if (productions[i][j][k]==nons[q])
                 {
+
                     // if (productions[i][j][k][0]!='\''){    //non terminal found
                     if (k!=productions[i][j].size()-1)     //sth after it
                     {
+
                         if(productions[i][j][k+1][0]=='\'')
                         {
                             auto it = follows.find(productions[i][j][k]); //
@@ -209,14 +209,14 @@ void table::call(int q)
                         else
                         {
                             auto it = firsts.find(productions[i][j][k+1]);
-                            auto itt=follows.find(productions[i][j][k]);
+                            auto itt= follows.find(productions[i][j][k]);
 
                             for (int m =0; m < it->second.size(); m++)
                             {
                                 if (it->second[m]!="" &&find(itt->second.begin(), itt->second.end(),it->second[m]) == itt->second.end())
                                 {
                                     itt->second.push_back( it->second[m]);
-                                   // cout<<"from non terminal : "<<productions[i][j][k]<<">>"<<it->second[m]<<endl;
+                                    // cout<<"from non terminal : "<<productions[i][j][k]<<">>"<<it->second[m]<<endl;
                                 }
                             }
                         }
@@ -224,15 +224,17 @@ void table::call(int q)
                     else if (productions[i][j][k]!=nons[i])       //nothing after it
                     {
                         auto it= follows.find(nons[i]);
-                        cout<<"rule 3 :"<<nons[i]<<":"<<it->second.size()<<endl;
+                        //cout<<"rule 3 :"<<nons[i]<<":"<<it->second.size()<<endl;
                         auto itt=follows.find(productions[i][j][k]);
-
+                        //if (q==8&&i==9&&j==0&&k==1)
+                         //   cout<<"NEED :"<<it->second.size()<<endl;
                         for (int m =0; m < it->second.size(); m++)
                         {
                             if (it->second[m]!="" &&find(itt->second.begin(), itt->second.end(),it->second[m]) == itt->second.end())
                             {
                                 itt->second.push_back( it->second[m]);  //
-                                //cout<<"from else terminal : "<<productions[i][j][k]<<">>"<<it->second[m]<<endl;
+                               // if (q==8)
+                                   // cout<<"from else terminalllllllllllllllllllllllll : "<<productions[i][j][k]<<">>"<<it->second[m]<<endl;
                             }
                         }
                     }
@@ -254,21 +256,19 @@ void table::get_follow()
     auto it = follows.find(nons[0]);
     it->second.push_back("$");
 
-
-
     for (int q=0; q<nons.size(); q++)
     {
         call(q);
 
-
 //if go to eps update productions
-        if (check_eps(nons[q-1]))
+       /* if (check_eps(nons[q-1]))
         {
             update_productions(nons[q-1]);
             call(q);
 
 
         }   //q --> q-1
+        */
     }
 
     for (int i=0; i<productions.size(); i++)
@@ -278,15 +278,12 @@ void table::get_follow()
             for (int k=0; k<productions[i][j].size(); k++)
             {
                 string x=productions[i][j][k];
-                if (x[0]=='\''&&find(terminals.begin(), terminals.end(),x) == terminals.end())
+                if (x[0]=='\''&&find(terminals.begin(), terminals.end(),x) == terminals.end()&&x!="''")
                     terminals.push_back(x.substr(1,x.size()-2));
             }
         }
     }
     terminals.push_back("$");
-
-
-
 }
 
 void table::create_table()
@@ -296,61 +293,75 @@ void table::create_table()
     {
         for (int j=0; j<productions[i].size(); j++)
         {
-            // for (int k=0; k<productions[i][j].size(); k++)
-            // {
             string x=productions[i][j][0];
+            string terminal = x.substr(1,x.size()-2);
             if (x[0]=='\'')
             {
-                int ix;
-                auto it = find(terminals.begin(), terminals.end(), x.substr(1,x.size()-2));
-                if (it != terminals.end())
-                    ix = it - terminals.begin();
-                string prod;
-                for (int k=0; k<productions[i][j].size(); k++)
-                    prod+= productions[i][j][k];
-                table[i][ix] = prod;
+                if (terminal!="")
+                {
+                    int ix;
+                    auto it = find(terminals.begin(), terminals.end(), x.substr(1,x.size()-2));
+                    if (it != terminals.end())
+                        ix = it - terminals.begin();
+                    string prod;
+                    for (int k=0; k<productions[i][j].size(); k++)
+                    {
+                        prod+=" ";
+                        prod+= productions[i][j][k];
+                    }
 
-
+                    table[i][ix] = prod;
+                }
+                else
+                {
+                    int ix;
+                    auto it=follows.find(nons[i]);
+                    for (int k=0; k<it->second.size(); k++)
+                    {
+                        auto itx = find(terminals.begin(),terminals.end(),it->second[k]);
+                        ix = itx-terminals.begin();
+                        if (table[i][ix]=="")
+                            table[i][ix]="''";
+                    }
+                }
             }
-            else if (x!=nons[i])
+            else if (x!=nons[i] )
             {
-
                 int ix;
                 auto it = find(nons.begin(), nons.end(), x);
                 if (it != nons.end())
                     ix = it - nons.begin();
                 string prod;
-                cout<<"prod: "<<prod<<endl;
+                vector<string> v = productions[i][j];
                 for (int k=0; k<productions[i][j].size(); k++)
-                    prod+= productions[i][j][k];
+                {
+                    prod+=" ";
+                    prod=prod+ productions[i][j][k];
+                }
+
+               // cout<<"proddddddddddddddddddd :"<<prod<<endl;
                 for (int m=0; m<terminals.size(); m++)
                 {
                     if (table[ix][m]!="")
                         table[i][m]=prod;
                 }
-
-
+            }
         }
     }
-        }
     for (int i=0; i<nons.size(); i++)
     {
         vector<string> x;
         for (int j=0; j<terminals.size(); j++)
         {
-            // if (table[i][j]!="")
-            // cout<<table[i][j]<<"  | ";
             x.push_back(table[i][j]);
         }
         parse_table.push_back(x);
-        //  cout<<endl;
     }
     for (int i=0; i<parse_table.size(); i++)
     {
         for (int j=0; j<parse_table[i].size(); j++)
         {
-            //if(parse_table[i][j]!="")
-                cout<<parse_table[i][j]<<" | ";
+            cout<<parse_table[i][j]<<" | ";
 
         }
         cout<<endl;
