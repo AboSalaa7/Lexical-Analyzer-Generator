@@ -4,7 +4,7 @@
 #include "parser.h"
 #include "table.h"
 #include "CFGParser.h"
-/*
+
 int main() {
     parser* gr = new parser("regex.txt","input.txt");
 
@@ -20,7 +20,7 @@ int main() {
     temp.accepted_token = final.get_end().accepted_token;
     temp.is_accepted = false;*/
 
-   /* vector<string> expNames = gr->get_expressions();
+    vector<string> expNames = gr->get_expressions();
     cout << expNames.size() << endl;
     unordered_map<string,NFA> allExpressions = gr->get_allnfa();
     cout<<"heyyy"<<endl;
@@ -77,7 +77,7 @@ int main() {
             cout<<it->second[i]<<"|";
         cout<<endl;
     }*/
-/*
+
     return 0;
 
 }

@@ -37,7 +37,7 @@ public:
     void clear_visited();
 
     //lina
-    vector<string> weights;
+
     vector<state> states;
     NFA create_NFA(string token);
     NFA kleene_closure(NFA a);
@@ -56,7 +56,7 @@ public:
     void set_NFA(NFA a);
     void print_NFA();
     int Findindex_states(NFA a, state find);
-    int count_weights();
+    vector<string> count_weights();
 
     virtual ~NFA();
 

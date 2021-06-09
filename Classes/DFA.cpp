@@ -105,9 +105,14 @@ void DFA::create_DFA(){
     D_State unvisited = this->states[id];
 
      bool flag=false;
-     vector<string> symbols ={"a","b"};
-    /* vector<string> symbols ={"a-z",
-                                 "A-Z",
+     //vector<string> symbols ={"a","b"};
+     vector<string> symbols = nfa.count_weights();
+     symbols.erase(symbols.begin());
+     for(int i=0;i<symbols.size();i++){
+        cout<<symbols[i]<<endl;
+
+     }
+     /*{"a-z","A-Z",
                                  "0-9",
                                  "==","!=",">",">=","<","<=","=",
                                  ";",",","(",")","{","}",
@@ -121,19 +126,18 @@ void DFA::create_DFA(){
             D_Edge edge = {symbols[i], unvisited, move_to};
             D_State U = e_closure(move_to,edge);
             if (U.sub_states.size()==0  ){
-                    flag=true;
-                    D_State d ;
-                    d.num=-1;
-                    D_Edge e={symbols[i],unvisited,d};
-
-                   // unvisited.children.push_back(e);
-                     for (int i=0;i<this->states.size();i++) {
-                        if( this->states[i].num== unvisited.num){
-                            this->states.at(i).children.push_back(e);
-                            break;
-
-                        }
+                flag=true;
+                D_State d ;
+                d.num=-1;
+                D_Edge e={symbols[i],unvisited,d};
+                // unvisited.children.push_back(e);
+                for (int i=0;i<this->states.size();i++) {
+                    if( this->states[i].num== unvisited.num){
+                        this->states.at(i).children.push_back(e);
+                        break;
                     }
+                }
+
             }
         }
         id = check_unvisited();
@@ -141,10 +145,13 @@ void DFA::create_DFA(){
     if (flag){
         D_State d;
         d.num=-1;
+        cout<<symbols.size()<<endl;
+        vector<D_Edge> child;
         for (int i=0;i<symbols.size();i++){
             D_Edge e={symbols[i],d,d};
-            d.children.push_back(e);
+            child.push_back(e);
         }
+        d.children = child;
         this->states.push_back(d);
 
     }
@@ -270,8 +277,8 @@ void DFA::set_start(D_State s){
 }
 
 void DFA::minimization() {
-    int weights = this->nfa.count_weights() - 1;
-    //cout<<"weights : "<<weights<<endl;
+    int weights = this->nfa.count_weights().size() - 1;
+    cout<<"weights : "<<weights<<endl;
     map <int, int> set;
     vector<D_State> empty;
     for(int i=0;i<2;i++) {
@@ -397,7 +404,7 @@ D_State DFA::get_start(){
     return this->states[0];
 }
 
-
+/*
 int main() {
     NFA a,b,c,d,e,f;
     a.create_NFA("a");
@@ -407,9 +414,9 @@ int main() {
     d.create_NFA("b");
     b.concatenate(b,d);
     e.create_NFA("a");
-    e=e.kleene_closure(e);
+    e= e.kleene_closure(e);
     f.create_NFA("b");
-    f=f.positiveClosure(f);
+    f= f.positiveClosure(f);
     e.concatenate(e,f);
     a.Union(a,b);
     a.Union(a,e);
@@ -424,3 +431,4 @@ int main() {
     return 0;
 }
 
+*/

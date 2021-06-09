@@ -528,20 +528,17 @@ int NFA::Findindex_states(NFA a, state find) {
 }
 
 
-int NFA::count_weights(){
+vector<string> NFA::count_weights(){
+    vector<string> weights;
     for (vector<state>::iterator it = states.begin(); it != states.end(); ++it) {
         vector<edge> edges = it->children;
         for (vector<edge>::iterator jit = edges.begin(); jit != edges.end(); ++jit) {
             if (std::find(weights.begin(), weights.end(), jit->weight) == weights.end()) {
-                this->weights.push_back(jit->weight);
-                cout<<jit->weight<<endl;
+                weights.push_back(jit->weight);
             }
-
         }
-        cout << endl;
     }
-
-    return this->weights.size();
+    return weights;
 }
 
 
