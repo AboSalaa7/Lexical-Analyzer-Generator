@@ -3,7 +3,7 @@
 
 #include "Classes/table.h"
 #include "Classes/CFGParser.h"
-#include "Classes/TokenParser.h";
+#include "Classes/TokenParser.h"
 int main()
 {
 
@@ -51,6 +51,7 @@ int main()
     cout << "here we create table" << endl;
     t.create_table();
     cout << " Creating Table Done" << endl;
+    t.printTable();
     TokenParser *tp = new TokenParser("output.txt");
     tp->fillTokens(tp->tokens,"input.txt");
     tp->fillVectors(t.nons,t.terminals,t.parse_table);
