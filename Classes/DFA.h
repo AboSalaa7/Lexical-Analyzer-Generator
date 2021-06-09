@@ -33,7 +33,6 @@ public:
     vector<vector<D_State>> Partition;
 
 
-
     void create_DFA();
     int check_unvisited();
     D_State check_if_exist(D_State e_state,D_Edge edge);
@@ -45,7 +44,6 @@ public:
     void add_state(D_State s);
     void minimization();
     void print_current(vector<D_State> current);
-    void print_mini();
 
 private:
     D_State start;

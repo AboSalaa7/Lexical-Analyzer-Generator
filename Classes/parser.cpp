@@ -86,7 +86,9 @@ void parser::getNFA(string line)
                 string c = "";
                 c.push_back(token[i]);
                 g2 = test.create_NFA(c);
+                g2.print_NFA();
                 result = result.concatenate(result,g2);
+                result.print_NFA();
             }
 
             expressions[token] = result;
@@ -118,7 +120,9 @@ void parser::getNFA(string line)
                 string c = "";
                 c.push_back(token[i]);
                 g2 = test.create_NFA(c);
+                g2.print_NFA();
                 result.Union(result,g2);
+                result.print_NFA();
                 cout << c << endl;
 
             }
@@ -184,6 +188,7 @@ void parser::getNFA(string line)
 
                         break;
                 }
+                resultIn.print_NFA();
                 graphs.push(resultIn);
             }
             else
@@ -194,7 +199,12 @@ void parser::getNFA(string line)
                 {
                     cout << "dash found" << endl;
                     regex_search(token,match1,split1);
-                    string f = match1[1];
+                    cout<<token<<endl;
+                    NFA g2,g2build, g3;
+                    g2 = g2build.create_NFA("");
+                    g3= g3.create_NFA(token);
+                    g2 = g2.Union(g2,g3);
+                   /* string f = match1[1];
                     string sc = match1[2];
                     int first = f[0];
                     int second = sc[0];
@@ -214,10 +224,10 @@ void parser::getNFA(string line)
                         g2 = g2.Union(g2,g3);
                         cout<<"g2 "<<endl;
                         g2.print_NFA();
-                    }
+                    }*/
                     resultIn = g2;
+                    resultIn.print_NFA();
                     graphs.push(g2);
-
                 }
                 else
                 {
@@ -246,23 +256,15 @@ void parser::getNFA(string line)
                                 continue;
                             }
                             c.push_back(token[i]);
-                            //   cout<<"before error"<<endl;
-                            //   cout<<c<<endl;
-
                             NFA G2;
                             G2.create_NFA(c);
-                            //   cout<<"before error"<<endl;
-
-                            resultIn = resultIn.Union(G,G2);
-                            /* cout<<"resultIn"<<endl;
-                             resultIn.print_NFA();*/
-                            // cout<<"end error"<<endl;
+                            resultIn = G.Union(G,G2);
                         }
 
                     }
+                    resultIn.print_NFA();
                     graphs.push(resultIn);
                 }
-
             }
         }
         cout << acceptance << " ended drawing" << endl;

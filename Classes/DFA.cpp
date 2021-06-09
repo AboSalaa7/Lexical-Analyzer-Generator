@@ -110,7 +110,14 @@ void DFA::create_DFA(){
         this->states.at(id).is_visited=true;
         D_State unvisited = this->states[id];
 
-        vector<string> symbols ={"*","/"};
+        vector<string> symbols ={"a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z",
+                                 "A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z",
+                                 "0","1","2","3","4","5","6","7","8","9",
+                                 "==","!=",">",">=","<","<=","=",
+                                 ";",",","(",")","{","}",
+                                 "+","-","*","/"  };
+
+
         //  vector<string> symbols = parser.get_symbols();
         for (int i=0; i<symbols.size(); i++){
             D_State move_to=move( unvisited,symbols[i]);
@@ -119,7 +126,7 @@ void DFA::create_DFA(){
         }
         id = check_unvisited();
     }
-    cout<<"DFA create numberof states:"<<states.size()<<endl;
+    //cout<<"DFA create numberof states:"<<states.size()<<endl;
 }
 
 
@@ -365,70 +372,37 @@ void DFA::minimization() {
 }
 
 
-void DFA::print_mini(){
-    cout<<"\n\n\n\n\n"<<endl;
-    for (int g=0;g<Partition.size();g++){
-        for (int i=0;i<Partition[g].size();i++) {
-            cout << g<<endl;
-            cout << Partition[g][i].num << " : ";
-            vector<D_Edge> edges = Partition[g][i].children;
-            for (int j=0;j<Partition[g][i].children.size();j++) {
-                cout <<Partition[g][i].children[j].to.num<<","<<Partition[g][i].children[j].weight<< " ";
-            }
-            cout << endl;
-        }
-    }
-}
 
 D_State DFA::get_start(){
     return this->states[0];
 }
 
-
-
-
-
-
 /*
-
 int main() {
-
-
     NFA a,b,c,d,e,f;
-
     a.create_NFA("a");
-
     b.create_NFA("a");
     c.create_NFA("b");
     b.concatenate(b,c);
     d.create_NFA("b");
     b.concatenate(b,d);
-
     e.create_NFA("a");
     e=e.kleene_closure(e);
     f.create_NFA("b");
     f=f.positiveClosure(f);
     e.concatenate(e,f);
-
     a.Union(a,b);
     a.Union(a,e);
-
     a.print_NFA();
     DFA dfa;
     dfa.nfa=a;
     dfa.create_DFA();
-    //dfa.print_DFA();
+
+    dfa.print_DFA();
     dfa.minimization();
-    dfa.print_mini();
+    //dfa.print_mini();
     cout<<"\n\n\n\n\n"<<endl;
     dfa.print_DFA();
-
-
-
-
-
-
     return 0;
 }
 */
-

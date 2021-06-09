@@ -348,23 +348,18 @@ NFA NFA::renameallstates(NFA res) {
 
 
 NFA NFA::Union(NFA& a, NFA& b) {
-    //b.print_NFA();
     NFA newb = renamestates(a,b);
     state starta = a.get_start();
     state enda = a.get_end();
     state startb = newb.get_start();
     state endb = newb.get_end();
     state start_new,end_new;
+
     enda.is_accepted = false;
     endb.is_accepted = false;
     start_new.is_accepted = false;
     end_new.is_accepted = true;
-    // newb.print_NFA();
 
-    /*   cout<<"starta.num "<<starta.num<<endl;
-       cout<<"enda.num "<<enda.num<<endl;
-       cout<<"startb.num "<<startb.num<<endl;
-       cout<<"endb.num "<<endb.num<<endl;*/
     if(endb.num > enda.num) {
         lastnum = endb.num+1;
     }
@@ -372,11 +367,8 @@ NFA NFA::Union(NFA& a, NFA& b) {
         lastnum = enda.num+1;
     }
 
-    // cout<<"lastnum"<<lastnum<<endl;
     start_new.num = lastnum++;
     end_new.num = lastnum++;
-    /* cout<<"start_new.num "<<start_new.num<<endl;
-     cout<<"end_new.num "<<end_new.num<<endl;*/
 
     edge edge1 = { "", start_new, starta};
     edge edge2 = { "", start_new, startb};
@@ -402,31 +394,64 @@ NFA NFA::Union(NFA& a, NFA& b) {
     newb.states.at(ieb) = endb;
     newb = updateState(newb, endb);
 
-    NFA res = a;
-    //a.print_NFA();
-    //newb.print_NFA();
-    // res.states.insert( res.states.end(), newb.states.begin() , newb.states.end() );
-
-    /* this->states.reserve( res.states.size() + newb.states.size() ); // preallocate memory
-
-     this->states.insert( this->states.end(), newb.states.begin(), newb.states.end() );*/
     insertingVectorb(newb);
     this->states.push_back(start_new);
     this->states.push_back(end_new);
-    // this->states = res.states;
 
     this->set_start(start_new);
     this->set_end(end_new);
 
-    //this->print_NFA();
     NFA renamed = renameallstates(*this);
-    /* cout<<"renamed"<<endl;
-     renamed.print_NFA();*/
     this->states = renamed.states;
     this->set_start(renamed.get_start());
     this->set_end(renamed.get_end());
     return *this;
 }
+
+NFA NFA::combine(unordered_map<string,NFA> allExpressions, vector<string> expNames) {
+    state start_new,end_new;
+    start_new.is_accepted = false;
+    end_new.is_accepted = true;
+    for(int i=0; i< expNames.size(); i++) {
+        cout << i<<endl;
+        NFA g2 = allExpressions[expNames[i]];
+        if(i != 0){
+            NFA g1 = allExpressions[expNames[i-1]];
+            g2 = renamestates(g1,g2);
+        }
+        state start = g2.get_start();
+        state end = g2.get_end();
+        end.is_accepted = false;
+        lastnum = end.num+1;
+        start_new.num = lastnum++;
+        end_new.num = lastnum++;
+        edge edge1 = { "", start_new, start};
+        edge edge2 = { "", end, end_new };
+
+        start_new.children.push_back(edge1);
+        end.children.push_back(edge2);
+        int is = Findindex_states(g2, g2.get_start());
+        g2.states.at(is) = start;
+        g2 = updateState(g2, start);
+        int ie = Findindex_states(g2, g2.get_end());
+        g2.states.at(ie) = end;
+        g2 = updateState(g2, end);
+
+        insertingVectorb(g2);
+    }
+    this->states.push_back(start_new);
+    this->states.push_back(end_new);
+    this->set_start(start_new);
+    this->set_end(end_new);
+
+    NFA renamed = renameallstates(*this);
+    this->states = renamed.states;
+    this->set_start(renamed.get_start());
+    this->set_end(renamed.get_end());
+
+    return *this;
+}
+
 
 state NFA::get_start() {
     return this->start;
@@ -533,16 +558,18 @@ int main() {
     string c = "c";
     //aaa+b*bba+ccc*
     NFA x = test.create_NFA(a);
-    test.print_NFA();
+   // test.print_NFA();
     NFA y = res.create_NFA(b);
-    res.print_NFA();
+//res.print_NFA();
     NFA z = k.create_NFA(c);
-    z.print_NFA();
-   x.concatenate(x,y);
+
+    test.Union(test,k);
+    test.print_NFA();
+   // z.print_NFA();
+  /* x.concatenate(x,y);
    x.print_NFA();
    x.positiveClosure(x);
    x.print_NFA();
-
     test.concatenate(test,test);
    // test.print_NFA();
     test.concatenate(test,x);
@@ -561,12 +588,10 @@ int main() {
    // z.print_NFA();
     k.concatenate(k,z);
     //k.print_NFA();
-
     test.Union(test,res);
     test.print_NFA();
     test.Union(test,k);
     test.print_NFA();
-
     return 0;
 }
 */

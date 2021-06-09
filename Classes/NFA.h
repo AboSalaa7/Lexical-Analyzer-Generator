@@ -47,6 +47,7 @@ public:
     NFA renamestates(NFA a, NFA b);
     NFA renameallstates(NFA res);
     NFA Union(NFA& a, NFA& b);
+    NFA combine(unordered_map<string,NFA> allExpressions, vector<string> expNames);
     state get_start();
     void set_start(state a);
     state get_end();
